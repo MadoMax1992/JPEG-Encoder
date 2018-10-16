@@ -1,58 +1,73 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace JPEG_Encoder
+namespace ConsoleApplication1
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        public static void Main(string[] args)
         {
+            Image sample = new Image();
 
+            sample.loadPPM(@"C:\Users\User\RiderProjects\Solution1\ConsoleApplication1\ueb1.ppm");
+            Console.WriteLine(sample.getPixel(6, 16));
 
-            //2-D-Datenstruktur ?
-            List<RGBPixel> RGBImage = new List<RGBPixel>();
-            RGBPixel data = new RGBPixel();
+        }
+    }
 
-            // Example
+    internal class Pixel
+    {
+        private byte[] _data = new byte[3];
+    }
 
-            //data.greenValue = 5;
-            //data.blueValue = 5;
-            //data.redValue = 5;
-            //data.xPixelCord = 1;
-            //data.yPixelCord = 2;
+    internal class Cluster
+    {
+        private Pixel[,] _data = new Pixel[16, 16];
 
-            //Data.Add(data);
+        public Pixel get(int x, int y)
+        {
+            return _data[x, y];
+        }
+    }
 
+    internal class Image
+    {
+        private Cluster[,] _data;
+        public Cluster get(int x, int y)
+        {
+            return _data[x, y];
+        }
 
+        public Pixel getPixel(int x, int y)
+        {
+            return this.get(x / 16, y / 16).get(x % 16, y % 16);
+        }
 
-            string line;
-
-
-            // Öffnet ein Stream, liest die Datei ein und gibt Zeilenweise die rgb pixel aus
-
-            try
+        public void loadPPM(string path)
+        {
+            System.IO.StreamReader file =
+                new System.IO.StreamReader(path);
+            if (file.ReadLine() == "P3")
             {
-                System.IO.StreamReader file =
-                new System.IO.StreamReader(@"C:\Users\Max-FH\Documents\Visual Studio 2017\Projects\JPEG Encoder\Bilder\red-blue-light.ppm");
+                string line;
+
+                while ((line = file.ReadLine())[0] == '#') ;
+
+                int width = int.Parse(line.Split(null)[0]);
+                int height = int.Parse(line.Split(null)[1]);
+
+                int depth = int.Parse(file.ReadLine());
+
+                System.Console.WriteLine("" + width + height + depth);
+
                 while ((line = file.ReadLine()) != null)
                 {
                     System.Console.WriteLine(line);
 
                 }
-                file.Close();
-            }
-            catch (Exception ex)
-            {
-                //Aussagekräftige meldung
             }
 
-
-            // lässt die console offen  
-            System.Console.ReadLine();
-
+            file.Close();
         }
+
     }
 }
