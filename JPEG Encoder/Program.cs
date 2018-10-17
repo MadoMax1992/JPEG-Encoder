@@ -8,8 +8,7 @@ namespace ConsoleApplication1
         {
             Image sample = new Image();
 
-            sample.loadPPM(@"C:\Users\User\RiderProjects\Solution1\ConsoleApplication1\ueb1.ppm");
-            Console.WriteLine(sample.getPixel(6, 16));
+            sample.loadPPM(@"img\red-blue-light.ppm");
 
         }
     }
@@ -65,7 +64,7 @@ namespace ConsoleApplication1
 
                 }
             }
-
+            System.Console.ReadLine();
             file.Close();
         }
 
