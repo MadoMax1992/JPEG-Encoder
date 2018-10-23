@@ -91,10 +91,10 @@ namespace JPEG_Encoder
                     }
                 }
             }
-            
 
-            var matrixColumns = (_width / stride + (_width % stride == 0 ? 0 : 1)) * stride;
-            var matrixRows = (_height / stride + (_height % stride == 0 ? 0 : 1)) * stride;
+
+            var matrixColumns = ((_width - 1) / stride + 1) * stride;
+            var matrixRows = ((_height - 1) / stride + 1) * stride;
             
 
             R = Matrix<double>.Build.Dense(matrixRows, matrixColumns);
