@@ -10,7 +10,7 @@ namespace JPEG_Encoder
         {
             var sample = new Image();
 
-            sample.LoadPpm("../../../img/TestPicture2.ppm",
+            sample.LoadPpm(@"img\black-white.ppm",
                 6);
         
             sample.ChangeToYCbCr();
@@ -145,7 +145,18 @@ namespace JPEG_Encoder
                 value += binReader.ReadChar().ToString();
             }
             binReader.ReadByte();   // get rid of the whitespace.
-            return int.Parse(value);
+
+            try
+            {
+                return int.Parse(value);
+            }
+            catch (System.FormatException e)
+            {
+                return 0;
+            }
+
+
+
         }
 
         public void ChangeToYCbCr()
