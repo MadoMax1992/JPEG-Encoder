@@ -22,7 +22,13 @@ namespace JPEG_Encoder
             Console.WriteLine("Cb: " + sample.Cb);
             Console.WriteLine("Cr: " + sample.Cr);
             
+           
+            
             sample.Cb = sample.SubSamplingToFactor(0, 2, sample.Cb);
+
+            Console.WriteLine("Cb: " + sample.Cb);
+
+
         }
     }
 
@@ -186,6 +192,18 @@ namespace JPEG_Encoder
             
         }
 
+        // Methoden zum testen und zur Verstandniss
+        public Matrix<double> MaxSubSamplingToFactor(int Factor, Matrix<double> channelMatrix)
+        {
+            var rowCount = channelMatrix.RowCount;
+            var columnCount = channelMatrix.ColumnCount;
+            if (Factor == 0) Factor = 1;
+            var subSampleMatrix = Matrix<double>.Build.Dense(rowCount, columnCount);
+
+            
+
+            return subSampleMatrix;
+        }
         public Matrix<double> SubSamplingToFactor(int xFactor, int yFactor, Matrix<double> channelMatrix)
         {
             try
@@ -196,6 +214,7 @@ namespace JPEG_Encoder
                 if (xFactor == 0) xFactor = 1;
                 if (yFactor == 0) yFactor = 1;
             
+                //Matrix wird hier verkleinert
                 var matrixRows = (rRowCount / xFactor + (rRowCount % xFactor == 0 ? 0 : 1));
                 var matrixColumns = (rColumnCount / yFactor + (rColumnCount % yFactor == 0 ? 0 : 1));
             
