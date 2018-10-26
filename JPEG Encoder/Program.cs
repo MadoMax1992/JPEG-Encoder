@@ -10,8 +10,7 @@ namespace JPEG_Encoder
         {
             var sample = new Image();
 
-            sample.LoadPpm("../../../img/TestPicture2.ppm",
-                6);
+            sample.LoadPpm("../../../img/TestPicture2.ppm", 8);
         
             sample.ChangeToYCbCr();
             
@@ -22,7 +21,9 @@ namespace JPEG_Encoder
             Console.WriteLine("Cb: " + sample.Cb);
             Console.WriteLine("Cr: " + sample.Cr);
             
-            sample.Cb = sample.SubSamplingToFactor(0, 2, sample.Cb);
+            sample.Cr = sample.SubSamplingToFactor(2, 2, sample.Cr);
+            
+            Console.WriteLine("Cr: " + sample.Cr);
         }
     }
 
@@ -93,8 +94,8 @@ namespace JPEG_Encoder
             }
             
 
-            var matrixColumns = (_width / stride + (_width % stride == 0 ? 0 : 1)) * stride;
-            var matrixRows = (_height / stride + (_height % stride == 0 ? 0 : 1)) * stride;
+            var matrixColumns = ((_width - 1) / stride + 1) * stride;
+            var matrixRows = ((_height - 1) / stride + 1) * stride;
             
 
             R = Matrix<double>.Build.Dense(matrixRows, matrixColumns);
@@ -144,7 +145,7 @@ namespace JPEG_Encoder
             {
                 value += binReader.ReadChar().ToString();
             }
-            binReader.ReadByte();   // get rid of the whitespace.
+            binReader.ReadByte();
             return int.Parse(value);
         }
 
@@ -182,17 +183,18 @@ namespace JPEG_Encoder
                 var rRowCount = channelMatrix.RowCount;
                 var rColumnCount = channelMatrix.ColumnCount;
             
+                // Für Performance-Optimierung noch entfernen
                 if (xFactor == 0) xFactor = 1;
                 if (yFactor == 0) yFactor = 1;
             
-                var matrixRows = (rRowCount / xFactor + (rRowCount % xFactor == 0 ? 0 : 1));
-                var matrixColumns = (rColumnCount / yFactor + (rColumnCount % yFactor == 0 ? 0 : 1));
+                var matrixRows = rRowCount / xFactor;
+                var matrixColumns = rColumnCount / yFactor;
             
                 var subSampledMatrix = Matrix<double>.Build.Dense(matrixRows, matrixColumns);
             
-                for (int x = 0; x < rRowCount; x += xFactor)
+                for (var x = 0; x < rRowCount; x += xFactor)
                 {
-                    for (int y = 0; y < rColumnCount; y += yFactor)
+                    for (var y = 0; y < rColumnCount; y += yFactor)
                     {
                         subSampledMatrix[x / xFactor, y / yFactor] = channelMatrix[x, y];
                     }
@@ -205,7 +207,6 @@ namespace JPEG_Encoder
                 Console.WriteLine("Exception caught: {0}", e);
                 throw;
             }
-            
         }
     }
 }
