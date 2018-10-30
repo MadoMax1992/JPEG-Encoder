@@ -58,7 +58,10 @@ namespace JPEG_Encoder
             
             BitStream bitStream2 = new BitStream(fileStream);
 
-            Console.WriteLine((int) bitStream2.ReadBit());
+            for (int i = 0; i < 10000000; i++)
+            {
+                bitStream2.ReadBit();
+            }
 
         }
     }
