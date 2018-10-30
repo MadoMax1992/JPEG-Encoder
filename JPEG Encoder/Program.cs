@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text;
 using BitStreams;
 using MathNet.Numerics.LinearAlgebra;
 
@@ -36,43 +37,26 @@ namespace JPEG_Encoder
 //            testImage.WriteImageOnlyFromCr(filename + "subbed");
 //            testImage.WriteImage(filename + "subbed");
 
-            FileStream fstream = new FileStream("../../../img/test.ppm", FileMode.OpenOrCreate);
+//            FileStream fstream = new FileStream("../../../img/test.ppm", FileMode.OpenOrCreate);
 
+            MemoryStream mStream = new MemoryStream();
 
-            var len = 50;
-
-            fstream.SetLength(len);
+            mStream.SetLength(1250000);
+            BitStream bitStream = new BitStream(mStream);
             
-            BitStream bitStream = new BitStream(fstream);
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 10000000; i++)
             {
                 bitStream.WriteBit(1);
             }
-            Console.WriteLine(fstream.Position);
-            Console.WriteLine(fstream);
-            Console.WriteLine(bitStream.GetStream().Length);
-            fstream.Close();
 
-            FileStream fstream2 = new FileStream("../../../img/test.ppm", FileMode.OpenOrCreate);
-            BitStream bitStream2 = new BitStream(fstream2);
+            bitStream.SaveStreamAsFile("../../../img/test.txt");
 
-            for (int i = 0; i < 10; i++)
-            {
-                Console.WriteLine((int) bitStream2.ReadBit());
-            }
+            FileStream fileStream = new FileStream("../../../img/test.txt", FileMode.Open);
             
-            
-            
-//            Console.Write(bitStream.Length);
+            BitStream bitStream2 = new BitStream(fileStream);
 
-            for (var i = 0; i < len; i++)
-            {
-//                bitStream.WriteBit(1);
-            }
-            
-//            Console.WriteLine(bitStream.ReadChar());
-            
+            Console.WriteLine((int) bitStream2.ReadBit());
 
         }
     }
