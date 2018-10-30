@@ -36,11 +36,42 @@ namespace JPEG_Encoder
 //            testImage.WriteImageOnlyFromCr(filename + "subbed");
 //            testImage.WriteImage(filename + "subbed");
 
-            byte[] _auintBitBuffer = new byte[2];
-            BitStream bitStream = new BitStream(_auintBitBuffer);
+            FileStream fstream = new FileStream("../../../img/test.ppm", FileMode.OpenOrCreate);
+
+
+            var len = 50;
+
+            fstream.SetLength(len);
             
-            bitStream.WriteBits();
-            Console.WriteLine(bitStream.ReadChar());
+            BitStream bitStream = new BitStream(fstream);
+
+            for (int i = 0; i < 10; i++)
+            {
+                bitStream.WriteBit(1);
+            }
+            Console.WriteLine(fstream.Position);
+            Console.WriteLine(fstream);
+            Console.WriteLine(bitStream.GetStream().Length);
+            fstream.Close();
+
+            FileStream fstream2 = new FileStream("../../../img/test.ppm", FileMode.OpenOrCreate);
+            BitStream bitStream2 = new BitStream(fstream2);
+
+            for (int i = 0; i < 10; i++)
+            {
+                Console.WriteLine((int) bitStream2.ReadBit());
+            }
+            
+            
+            
+//            Console.Write(bitStream.Length);
+
+            for (var i = 0; i < len; i++)
+            {
+//                bitStream.WriteBit(1);
+            }
+            
+//            Console.WriteLine(bitStream.ReadChar());
             
 
         }
