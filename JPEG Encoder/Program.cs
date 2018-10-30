@@ -496,6 +496,9 @@ namespace JPEG_Encoder
             bitStream.WriteByte(0x00);
             bitStream.WriteByte(0xFF);
             
+            // Anzahl Komponenten
+            bitStream.WriteByte(0x03);
+
             // Komponente 1 
             bitStream.WriteByte(0x01);
             bitStream.WriteByte(0x22);
