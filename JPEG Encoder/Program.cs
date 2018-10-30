@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using BitStreams;
 using MathNet.Numerics.LinearAlgebra;
 
 namespace JPEG_Encoder
@@ -9,32 +10,29 @@ namespace JPEG_Encoder
     {
         public static void Main(string[] args)
         {
+            MemoryStream mStream = new MemoryStream();
 
-            //2a
-            int len = 10000000;
-
-            FileStream writeFs = new FileStream("data.bin", FileMode.Create);
-            BinaryWriter bw = new BinaryWriter(writeFs);
+            mStream.SetLength(1250000);
+            BitStream bitStream = new BitStream(mStream);
 
 
-            BitArray binWriter = new BitArray(len);
-            for (int i = 0; i < len; i++)
+            for (int i = 0; i < 10000000; i++)
             {
-                binWriter.Set(i, true);
-                bw.Write(binWriter[i]);
+                bitStream.WriteBit(1);
             }
 
-            writeFs.Close();
+            bitStream.SaveStreamAsFile("data.bin");
 
-            FileStream readfs = new FileStream("data.bin", FileMode.Open);
-            BinaryReader br = new BinaryReader(readfs);
+            FileStream fileStream = new FileStream("data.bin", FileMode.Open);
 
-            byte[] binReader = new byte[binWriter.Count];
+            BitStream bitStream2 = new BitStream(fileStream);
 
-            for (int i = 0; i < binWriter.Count; i++)
+            for (int i = 0; i < mStream.Length; i++)
             {
-                binReader[i] = br.ReadByte();
+               bitStream2.ReadBit();
             }
+
+
 
 
             var sample = new Image();
@@ -76,7 +74,7 @@ namespace JPEG_Encoder
             public Matrix<double> Cr;
 
 
-            
+
             public void LoadPpm(string path, int stride)
             {
                 var stream = new FileStream(path, FileMode.Open);
