@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using BitStreams;
 using MathNet.Numerics.LinearAlgebra;
 
 namespace JPEG_Encoder
@@ -8,32 +9,50 @@ namespace JPEG_Encoder
     {
         public static void Main(string[] args)
         {
-            var sample = new Image();
+            // flip first bit of int
+            // y&~(1 << 1) 
 
-            sample.LoadPpm("../../../img/TestPicture2.ppm", 8);
-        
-            sample.ChangeToYCbCr();
+//            var filename = "../../../img/blackbuck_ascii.ppm";
+//            
+//            var testImage = new Image(filename, 8);
+//            
+//
+//            filename = filename.Substring(0, filename.Length - 4);
+//            
+//            testImage.ChangeToYCbCr();
+//            
+//            testImage.WriteImageOnlyFromY(filename);
+//            testImage.WriteImageOnlyFromCb(filename);
+//            testImage.WriteImageOnlyFromCr(filename);
+//            testImage.WriteImage(filename);
+//            
+//            testImage.Cr = testImage.SubSamplingTo411(2, testImage.Cr, false);
+//            testImage.Cb = testImage.SubSamplingTo411(2, testImage.Cb, false);
+//
+//            testImage.Cr = testImage.ReSamplingTo411(2, testImage.Cr);
+//            testImage.Cb = testImage.ReSamplingTo411(2, testImage.Cb);
+//            
+//            testImage.WriteImageOnlyFromCb(filename + "subbed");
+//            testImage.WriteImageOnlyFromCr(filename + "subbed");
+//            testImage.WriteImage(filename + "subbed");
+
+            byte[] _auintBitBuffer = new byte[2];
+            BitStream bitStream = new BitStream(_auintBitBuffer);
             
-            Console.WriteLine("R: " + sample.R);
-            Console.WriteLine("G: " + sample.G);
-            Console.WriteLine("B: " + sample.B);
-            Console.WriteLine("Y: " + sample.Y);
-            Console.WriteLine("Cb: " + sample.Cb);
-            Console.WriteLine("Cr: " + sample.Cr);
+            bitStream.WriteBits();
+            Console.WriteLine(bitStream.ReadChar());
             
-            sample.Cr = sample.SubSamplingToFactor(2, 2, sample.Cr);
-            
-            Console.WriteLine("Cr: " + sample.Cr);
+
         }
     }
 
 
     internal class Image
     {
-        private string _magicNumber;
-        private int _width;
-        private int _height;
-        private int _depth;
+        private readonly string _magicNumber;
+        private readonly int _width;
+        private readonly int _height;
+        private readonly int _depth;
         
         public Matrix<double> R;
         public Matrix<double> G;
@@ -41,9 +60,9 @@ namespace JPEG_Encoder
         public Matrix<double> Y;
         public Matrix<double> Cb;
         public Matrix<double> Cr;
-       
 
-        public void LoadPpm(string path, int stride)
+
+        public Image(string path, int stride)
         {
             var stream = new FileStream(path, FileMode.Open);
 
@@ -126,7 +145,7 @@ namespace JPEG_Encoder
 
                 }
             }
-            
+
             for (var x = _height; x < matrixRows; x++)
             {
                 for (var y = 0; y < matrixColumns; y++)
@@ -135,8 +154,10 @@ namespace JPEG_Encoder
                     B[x, y] = B[x - 1, y];
                     G[x, y] = G[x - 1, y];
                 }
-            }            
-        }
+            }
+        } 
+           
+        
         
         private static int ReadValue(BinaryReader binReader)
         {
@@ -145,7 +166,10 @@ namespace JPEG_Encoder
             {
                 value += binReader.ReadChar().ToString();
             }
-            binReader.ReadByte();
+            while (char.IsWhiteSpace((char)binReader.PeekChar()))
+            {
+                binReader.ReadByte();
+            };
             return int.Parse(value);
         }
 
@@ -176,27 +200,26 @@ namespace JPEG_Encoder
             
         }
 
-        public Matrix<double> SubSamplingToFactor(int xFactor, int yFactor, Matrix<double> channelMatrix)
+        public Matrix<double> SubSamplingToFactor(int factor, Matrix<double> channelMatrix, bool average)
         {
             try
             {
                 var rRowCount = channelMatrix.RowCount;
                 var rColumnCount = channelMatrix.ColumnCount;
             
-                // Für Performance-Optimierung noch entfernen
-                if (xFactor == 0) xFactor = 1;
-                if (yFactor == 0) yFactor = 1;
+                // Remove for performance optimization
+                if (factor == 0) factor = 1;
             
-                var matrixRows = rRowCount / xFactor;
-                var matrixColumns = rColumnCount / yFactor;
+                var matrixRows = rRowCount / factor;
+                var matrixColumns = rColumnCount / factor;
             
                 var subSampledMatrix = Matrix<double>.Build.Dense(matrixRows, matrixColumns);
             
-                for (var x = 0; x < rRowCount; x += xFactor)
+                for (var x = 0; x < rRowCount; x += factor)
                 {
-                    for (var y = 0; y < rColumnCount; y += yFactor)
+                    for (var y = 0; y < rColumnCount; y += factor)
                     {
-                        subSampledMatrix[x / xFactor, y / yFactor] = channelMatrix[x, y];
+                        subSampledMatrix[x / factor, y / factor] = channelMatrix[x, y];
                     }
                 }
 
@@ -207,6 +230,190 @@ namespace JPEG_Encoder
                 Console.WriteLine("Exception caught: {0}", e);
                 throw;
             }
+        }
+        
+        public Matrix<double> SubSamplingTo411(int factor, Matrix<double> channelMatrix, bool average)
+        {
+            try
+            {
+                var rRowCount = channelMatrix.RowCount;
+                var rColumnCount = channelMatrix.ColumnCount;
+            
+                // Remove for performance optimization
+                if (factor == 0) factor = 1;
+            
+                var matrixRows = rRowCount;
+                var matrixColumns = rColumnCount / factor;
+            
+                var subSampledMatrix = Matrix<double>.Build.Dense(matrixRows, matrixColumns);
+            
+                for (var x = 0; x < rRowCount; x++)
+                {
+                    for (var y = 0; y < rColumnCount; y += factor)
+                    {
+                        subSampledMatrix[x, y / factor] = channelMatrix[x, y];
+                    }
+                }
+
+                return subSampledMatrix;
+            }
+            catch (NullReferenceException e)
+            {
+                Console.WriteLine("Exception caught: {0}", e);
+                throw;
+            }
+        }
+
+        public Matrix<double> ReSamplingToFactor(int factor, Matrix<double> channelMatrix)
+        {
+            var reSampledMatrix = Matrix<double>.Build.Dense(Y.RowCount, Y.ColumnCount);
+
+            try
+            {
+
+                for (var x = 0; x < reSampledMatrix.RowCount; x++)
+                {
+                    for (var y = 0; y < reSampledMatrix.ColumnCount; y++)
+                    {
+                        var index = 0;
+                        while (index < factor)
+                        {
+                            reSampledMatrix[x, y] = channelMatrix[x / factor, y / factor];
+                            index++;
+                        }
+                    }
+                }
+
+                return reSampledMatrix;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception caught: {0}", e);
+                if ( e is ArgumentOutOfRangeException) Console.WriteLine(reSampledMatrix);
+                throw;
+            }
+        }
+        
+        public Matrix<double> ReSamplingTo411(int factor, Matrix<double> channelMatrix)
+        {
+            var reSampledMatrix = Matrix<double>.Build.Dense(Y.RowCount, Y.ColumnCount);
+
+            try
+            {
+
+                for (var x = 0; x < reSampledMatrix.RowCount; x++)
+                {
+                    for (var y = 0; y < reSampledMatrix.ColumnCount; y++)
+                    {
+                        var index = 0;
+                        while (index < factor)
+                        {
+                            reSampledMatrix[x, y] = channelMatrix[x, y / factor];
+                            index++;
+                        }
+                    }
+                }
+
+                return reSampledMatrix;
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Exception caught: {0}", e);
+                if ( e is ArgumentOutOfRangeException) Console.WriteLine(reSampledMatrix);
+                throw;
+            }
+        }
+
+
+        public void WriteImageOnlyFromY(string filename)
+        {
+            filename += "Y.ppm";
+
+            var writer = new StreamWriter(filename);
+            writer.WriteLine(_magicNumber);
+            writer.WriteLine(_width + " " + _height);
+            writer.WriteLine(_depth);
+            
+            for (var x = 0; x < _height; x++)
+            {
+                
+                for (var y = 0; y < _width; y++)
+                {
+                    writer.WriteLine((int)Y[x, y]);
+                    writer.WriteLine((int)Y[x, y]);
+                    writer.WriteLine((int)Y[x, y]);
+                }
+            }
+            
+            writer.Close();
+        }
+            
+        public void WriteImageOnlyFromCb(string filename)
+        {
+            filename += "Cb.ppm";
+            var writer = new StreamWriter(filename);
+            writer.WriteLine(_magicNumber);
+            writer.WriteLine(_width + " " + _height);
+            writer.WriteLine(_depth);
+            
+            for (var x = 0; x < _height; x++)
+            {
+                
+                for (var y = 0; y < _width; y++)
+                {
+                    writer.WriteLine((int)Cb[x, y]);
+                    writer.WriteLine((int)(Cb[x, y] * -0.344136));
+                    writer.WriteLine((int)(Cb[x, y] * 1.772));
+                }
+            }
+            
+            writer.Close();
+        }  
+        
+        public void WriteImageOnlyFromCr(string filename)
+        {
+            filename += "Cr.ppm";
+            var writer = new StreamWriter(filename);
+            writer.WriteLine(_magicNumber);
+            writer.WriteLine(_width + " " + _height);
+            writer.WriteLine(_depth);
+            
+            for (var x = 0; x < _height; x++)
+            {
+                
+                for (var y = 0; y < _width; y++)
+                {
+                    writer.WriteLine((int)(Cr[x, y] * 1.402));
+                    writer.WriteLine((int)(Cr[x, y] * -0.714136));
+                    writer.WriteLine((int)(Cr[x, y]));
+                }
+            }
+            
+            writer.Close();
+        }
+
+        public void WriteImage(string filename)
+        {
+            filename += "New.ppm";
+            var writer = new StreamWriter(filename);
+            writer.WriteLine(_magicNumber);
+            writer.WriteLine(_width + " " + _height);
+            writer.WriteLine(_depth);
+            
+            for (var x = 0; x < _height; x++)
+            {
+                
+                for (var y = 0; y < _width; y++)
+                {
+                    writer.WriteLine((int)(Y[x, y] + (Cb[x, y] - 127.5) * 0 + (Cr[x, y] - 127.5) * 1.402));
+                    writer.WriteLine((int)(Y[x, y] + (Cb[x, y] - 127.5) * -0.344136 + (Cr[x, y] - 127.5) * -0.714136));
+                    writer.WriteLine((int)(Y[x, y] + (Cb[x, y] - 127.5) * 1.772 + (Cr[x, y] - 127.5) * 0));
+                }
+            }
+            
+            writer.Close();
         }
     }
 }
