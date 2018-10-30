@@ -13,9 +13,11 @@ namespace JPEG_Encoder
             // flip first bit of int
             // y&~(1 << 1) 
 
-//            var filename = "../../../img/blackbuck_ascii.ppm";
+            var filename = "../../../img/blackbuck_ascii.ppm";
 //            
-//            var testImage = new Image(filename, 8);
+            var testImage = new Image(filename, 8);
+            
+            testImage.writeJpeg();
 //            
 //
 //            filename = filename.Substring(0, filename.Length - 4);
@@ -429,6 +431,94 @@ namespace JPEG_Encoder
             }
             
             writer.Close();
+        }
+
+        public void writeJpeg()
+        {
+            MemoryStream mStream = new MemoryStream();
+
+            mStream.SetLength(1250000);
+            BitStream bitStream = new BitStream(mStream);
+            
+            // SOI
+            bitStream.WriteByte(0xff);
+            bitStream.WriteByte(0xd8);
+            
+            // APP0
+            bitStream.WriteByte(0xff);
+            bitStream.WriteByte(0xe0);
+            
+            // Laenge des Segment
+            bitStream.WriteByte(0x00);
+            bitStream.WriteByte(0x10);
+            // JFIF
+            bitStream.WriteByte(0x4a);
+            bitStream.WriteByte(0x46);
+            bitStream.WriteByte(0x49);
+            bitStream.WriteByte(0x46);
+            bitStream.WriteByte(0x00);
+            
+            // Major Minor Revision
+            bitStream.WriteByte(0x01);
+            bitStream.WriteByte(0x01);
+            
+            // Pixelgroesse
+            bitStream.WriteByte(0x00);
+            
+            // x-Dichte
+            bitStream.WriteByte(0x00);
+            bitStream.WriteByte(0x48);
+            
+            // y-Dichte
+            bitStream.WriteByte(0x00);
+            bitStream.WriteByte(0x48);
+            
+            bitStream.WriteByte(0x00);
+            bitStream.WriteByte(0x00);
+            // Ende APP0
+            
+            // SOF0
+            bitStream.WriteByte(0xFF);
+            bitStream.WriteByte(0xC0);
+            
+            // Frame Header Length
+            bitStream.WriteByte(0x00);
+            bitStream.WriteByte(0x11);
+            
+            // Prescision
+            bitStream.WriteByte(0x08);
+
+            // Bildgroesse y
+            bitStream.WriteByte(0x00);
+            bitStream.WriteByte(0xFF);
+
+            // Bildgroesse x
+            bitStream.WriteByte(0x00);
+            bitStream.WriteByte(0xFF);
+            
+            // Komponente 1 
+            bitStream.WriteByte(0x01);
+            bitStream.WriteByte(0x22);
+            bitStream.WriteByte(0x00);
+            
+            // Komponente 2
+            bitStream.WriteByte(0x02);
+            bitStream.WriteByte(0x11);
+            bitStream.WriteByte(0x01);
+            
+            // Komponente 3
+            bitStream.WriteByte(0x03);
+            bitStream.WriteByte(0x11);
+            bitStream.WriteByte(0x01);
+            // ENDE SOF0
+            
+            
+            // EOI
+            bitStream.WriteByte(0xFF);
+            bitStream.WriteByte(0xD9);
+
+            
+            bitStream.SaveStreamAsFile("../../../img/testImage.jpg");
         }
     }
 }
