@@ -34,6 +34,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BinaryTree, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BinaryTree.5.0.0\lib\netstandard2.0\BinaryTree.dll</HintPath>
+    </Reference>
     <Reference Include="BitStreams, Version=1.2.0.0, Culture=neutral, PublicKeyToken=null">
       <HintPath>..\packages\rubendal.BitStream.1.2\lib\net40\BitStreams.dll</HintPath>
       <Private>True</Private>

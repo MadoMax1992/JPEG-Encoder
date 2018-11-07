@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using BinaryTree;
 using BitStreams;
 using MathNet.Numerics.LinearAlgebra;
 
@@ -14,38 +15,38 @@ namespace JPEG_Encoder
             // y&~(1 << 1) 
 
             var filename = "../../../img/blackbuck_ascii.ppm";
-//            
+            //            
             var testImage = new Image(filename, 8);
-            
-            testImage.writeJpeg();
-//            
-//
-//            filename = filename.Substring(0, filename.Length - 4);
-//            
-//            testImage.ChangeToYCbCr();
-//            
-//            testImage.WriteImageOnlyFromY(filename);
-//            testImage.WriteImageOnlyFromCb(filename);
-//            testImage.WriteImageOnlyFromCr(filename);
-//            testImage.WriteImage(filename);
-//            
-//            testImage.Cr = testImage.SubSamplingTo411(2, testImage.Cr, false);
-//            testImage.Cb = testImage.SubSamplingTo411(2, testImage.Cb, false);
-//
-//            testImage.Cr = testImage.ReSamplingTo411(2, testImage.Cr);
-//            testImage.Cb = testImage.ReSamplingTo411(2, testImage.Cb);
-//            
-//            testImage.WriteImageOnlyFromCb(filename + "subbed");
-//            testImage.WriteImageOnlyFromCr(filename + "subbed");
-//            testImage.WriteImage(filename + "subbed");
 
-//            FileStream fstream = new FileStream("../../../img/test.ppm", FileMode.OpenOrCreate);
+            testImage.writeJpeg();
+            //            
+            //
+            //            filename = filename.Substring(0, filename.Length - 4);
+            //            
+            //            testImage.ChangeToYCbCr();
+            //            
+            //            testImage.WriteImageOnlyFromY(filename);
+            //            testImage.WriteImageOnlyFromCb(filename);
+            //            testImage.WriteImageOnlyFromCr(filename);
+            //            testImage.WriteImage(filename);
+            //            
+            //            testImage.Cr = testImage.SubSamplingTo411(2, testImage.Cr, false);
+            //            testImage.Cb = testImage.SubSamplingTo411(2, testImage.Cb, false);
+            //
+            //            testImage.Cr = testImage.ReSamplingTo411(2, testImage.Cr);
+            //            testImage.Cb = testImage.ReSamplingTo411(2, testImage.Cb);
+            //            
+            //            testImage.WriteImageOnlyFromCb(filename + "subbed");
+            //            testImage.WriteImageOnlyFromCr(filename + "subbed");
+            //            testImage.WriteImage(filename + "subbed");
+
+            //            FileStream fstream = new FileStream("../../../img/test.ppm", FileMode.OpenOrCreate);
 
             MemoryStream mStream = new MemoryStream();
 
             mStream.SetLength(1250000);
             BitStream bitStream = new BitStream(mStream);
-            
+
 
             for (int i = 0; i < 10000000; i++)
             {
@@ -55,7 +56,7 @@ namespace JPEG_Encoder
             bitStream.SaveStreamAsFile("../../../img/test.txt");
 
             FileStream fileStream = new FileStream("../../../img/test.txt", FileMode.Open);
-            
+
             BitStream bitStream2 = new BitStream(fileStream);
 
             for (int i = 0; i < 10000000; i++)
@@ -73,8 +74,9 @@ namespace JPEG_Encoder
         private readonly int _width;
         private readonly int _height;
         private readonly int _depth;
-        
+
         public Matrix<double> R;
+
         public Matrix<double> G;
         public Matrix<double> B;
         public Matrix<double> Y;
@@ -92,8 +94,8 @@ namespace JPEG_Encoder
 
             while (headerItemCount < 4)
             {
-                
-                var nextChar = (char) binReader.PeekChar();
+
+                var nextChar = (char)binReader.PeekChar();
                 if (nextChar == '#')
                 {
                     while (binReader.ReadChar() != '\n')
@@ -105,10 +107,10 @@ namespace JPEG_Encoder
                     binReader.ReadChar();
                 }
                 else
-                {                    
+                {
                     switch (headerItemCount)
                     {
-                        case 0: 
+                        case 0:
                             var chars = binReader.ReadChars(2);
                             _magicNumber = chars[0] + chars[1].ToString();
                             headerItemCount++;
@@ -127,23 +129,23 @@ namespace JPEG_Encoder
                             break;
                         default:
                             throw new Exception("Error");
-                            
+
                     }
                 }
             }
-            
+
 
             var matrixColumns = ((_width - 1) / stride + 1) * stride;
             var matrixRows = ((_height - 1) / stride + 1) * stride;
-            
+
 
             R = Matrix<double>.Build.Dense(matrixRows, matrixColumns);
             G = Matrix<double>.Build.Dense(matrixRows, matrixColumns);
             B = Matrix<double>.Build.Dense(matrixRows, matrixColumns);
-            
+
             for (var x = 0; x < _height; x++)
             {
-                
+
                 for (var y = 0; y < _width; y++)
                 {
                     R[x, y] = ReadValue(binReader);
@@ -151,7 +153,7 @@ namespace JPEG_Encoder
                     B[x, y] = ReadValue(binReader);
                 }
             }
-            
+
             binReader.Close();
 
             for (var x = 0; x < _height; x++)
@@ -175,10 +177,10 @@ namespace JPEG_Encoder
                     G[x, y] = G[x - 1, y];
                 }
             }
-        } 
-           
-        
-        
+        }
+
+
+
         private static int ReadValue(BinaryReader binReader)
         {
             var value = string.Empty;
@@ -190,7 +192,16 @@ namespace JPEG_Encoder
             {
                 binReader.ReadByte();
             };
-            return int.Parse(value);
+            try
+            {
+
+
+                return int.Parse(value);
+            }
+            catch (Exception e)
+            {
+                return 0;
+            }
         }
 
         public void ChangeToYCbCr()
@@ -208,7 +219,7 @@ namespace JPEG_Encoder
                     for (var y = 0; y < rColumnCount; y++)
                     {
                         Y[x, y] = 0.299 * R[x, y] + 0.587 * G[x, y] + 0.114 * B[x, y];
-                        Cb[x, y] = - 0.1687 * R[x, y] - 0.3312 * G[x, y] + 0.5 * B[x, y] + 255.0 / 2;
+                        Cb[x, y] = -0.1687 * R[x, y] - 0.3312 * G[x, y] + 0.5 * B[x, y] + 255.0 / 2;
                         Cr[x, y] = 0.5 * R[x, y] - 0.4186 * G[x, y] - 0.0813 * B[x, y] + 255.0 / 2;
                     }
                 }
@@ -217,7 +228,7 @@ namespace JPEG_Encoder
             {
                 Console.WriteLine("Exception caught: {0}", e);
             }
-            
+
         }
 
         public Matrix<double> SubSamplingToFactor(int factor, Matrix<double> channelMatrix, bool average)
@@ -226,15 +237,15 @@ namespace JPEG_Encoder
             {
                 var rRowCount = channelMatrix.RowCount;
                 var rColumnCount = channelMatrix.ColumnCount;
-            
+
                 // Remove for performance optimization
                 if (factor == 0) factor = 1;
-            
+
                 var matrixRows = rRowCount / factor;
                 var matrixColumns = rColumnCount / factor;
-            
+
                 var subSampledMatrix = Matrix<double>.Build.Dense(matrixRows, matrixColumns);
-            
+
                 for (var x = 0; x < rRowCount; x += factor)
                 {
                     for (var y = 0; y < rColumnCount; y += factor)
@@ -251,22 +262,22 @@ namespace JPEG_Encoder
                 throw;
             }
         }
-        
+
         public Matrix<double> SubSamplingTo411(int factor, Matrix<double> channelMatrix, bool average)
         {
             try
             {
                 var rRowCount = channelMatrix.RowCount;
                 var rColumnCount = channelMatrix.ColumnCount;
-            
+
                 // Remove for performance optimization
                 if (factor == 0) factor = 1;
-            
+
                 var matrixRows = rRowCount;
                 var matrixColumns = rColumnCount / factor;
-            
+
                 var subSampledMatrix = Matrix<double>.Build.Dense(matrixRows, matrixColumns);
-            
+
                 for (var x = 0; x < rRowCount; x++)
                 {
                     for (var y = 0; y < rColumnCount; y += factor)
@@ -310,11 +321,11 @@ namespace JPEG_Encoder
             catch (Exception e)
             {
                 Console.WriteLine("Exception caught: {0}", e);
-                if ( e is ArgumentOutOfRangeException) Console.WriteLine(reSampledMatrix);
+                if (e is ArgumentOutOfRangeException) Console.WriteLine(reSampledMatrix);
                 throw;
             }
         }
-        
+
         public Matrix<double> ReSamplingTo411(int factor, Matrix<double> channelMatrix)
         {
             var reSampledMatrix = Matrix<double>.Build.Dense(Y.RowCount, Y.ColumnCount);
@@ -341,7 +352,7 @@ namespace JPEG_Encoder
             catch (Exception e)
             {
                 Console.WriteLine("Exception caught: {0}", e);
-                if ( e is ArgumentOutOfRangeException) Console.WriteLine(reSampledMatrix);
+                if (e is ArgumentOutOfRangeException) Console.WriteLine(reSampledMatrix);
                 throw;
             }
         }
@@ -355,10 +366,10 @@ namespace JPEG_Encoder
             writer.WriteLine(_magicNumber);
             writer.WriteLine(_width + " " + _height);
             writer.WriteLine(_depth);
-            
+
             for (var x = 0; x < _height; x++)
             {
-                
+
                 for (var y = 0; y < _width; y++)
                 {
                     writer.WriteLine((int)Y[x, y]);
@@ -366,10 +377,10 @@ namespace JPEG_Encoder
                     writer.WriteLine((int)Y[x, y]);
                 }
             }
-            
+
             writer.Close();
         }
-            
+
         public void WriteImageOnlyFromCb(string filename)
         {
             filename += "Cb.ppm";
@@ -377,10 +388,10 @@ namespace JPEG_Encoder
             writer.WriteLine(_magicNumber);
             writer.WriteLine(_width + " " + _height);
             writer.WriteLine(_depth);
-            
+
             for (var x = 0; x < _height; x++)
             {
-                
+
                 for (var y = 0; y < _width; y++)
                 {
                     writer.WriteLine((int)Cb[x, y]);
@@ -388,10 +399,10 @@ namespace JPEG_Encoder
                     writer.WriteLine((int)(Cb[x, y] * 1.772));
                 }
             }
-            
+
             writer.Close();
-        }  
-        
+        }
+
         public void WriteImageOnlyFromCr(string filename)
         {
             filename += "Cr.ppm";
@@ -399,10 +410,10 @@ namespace JPEG_Encoder
             writer.WriteLine(_magicNumber);
             writer.WriteLine(_width + " " + _height);
             writer.WriteLine(_depth);
-            
+
             for (var x = 0; x < _height; x++)
             {
-                
+
                 for (var y = 0; y < _width; y++)
                 {
                     writer.WriteLine((int)(Cr[x, y] * 1.402));
@@ -410,7 +421,7 @@ namespace JPEG_Encoder
                     writer.WriteLine((int)(Cr[x, y]));
                 }
             }
-            
+
             writer.Close();
         }
 
@@ -421,10 +432,10 @@ namespace JPEG_Encoder
             writer.WriteLine(_magicNumber);
             writer.WriteLine(_width + " " + _height);
             writer.WriteLine(_depth);
-            
+
             for (var x = 0; x < _height; x++)
             {
-                
+
                 for (var y = 0; y < _width; y++)
                 {
                     writer.WriteLine((int)(Y[x, y] + (Cb[x, y] - 127.5) * 0 + (Cr[x, y] - 127.5) * 1.402));
@@ -432,7 +443,7 @@ namespace JPEG_Encoder
                     writer.WriteLine((int)(Y[x, y] + (Cb[x, y] - 127.5) * 1.772 + (Cr[x, y] - 127.5) * 0));
                 }
             }
-            
+
             writer.Close();
         }
 
@@ -442,15 +453,15 @@ namespace JPEG_Encoder
 
             mStream.SetLength(1250000);
             BitStream bitStream = new BitStream(mStream);
-            
+
             // SOI
             bitStream.WriteByte(0xff);
             bitStream.WriteByte(0xd8);
-            
+
             // APP0
             bitStream.WriteByte(0xff);
             bitStream.WriteByte(0xe0);
-            
+
             // Laenge des Segment
             bitStream.WriteByte(0x00);
             bitStream.WriteByte(0x10);
@@ -460,34 +471,34 @@ namespace JPEG_Encoder
             bitStream.WriteByte(0x49);
             bitStream.WriteByte(0x46);
             bitStream.WriteByte(0x00);
-            
+
             // Major Minor Revision
             bitStream.WriteByte(0x01);
             bitStream.WriteByte(0x01);
-            
+
             // Pixelgroesse
             bitStream.WriteByte(0x00);
-            
+
             // x-Dichte
             bitStream.WriteByte(0x00);
             bitStream.WriteByte(0x48);
-            
+
             // y-Dichte
             bitStream.WriteByte(0x00);
             bitStream.WriteByte(0x48);
-            
+
             bitStream.WriteByte(0x00);
             bitStream.WriteByte(0x00);
             // Ende APP0
-            
+
             // SOF0
             bitStream.WriteByte(0xFF);
             bitStream.WriteByte(0xC0);
-            
+
             // Frame Header Length
             bitStream.WriteByte(0x00);
             bitStream.WriteByte(0x11);
-            
+
             // Prescision
             bitStream.WriteByte(0x08);
 
@@ -498,7 +509,7 @@ namespace JPEG_Encoder
             // Bildgroesse x
             bitStream.WriteByte(0x00);
             bitStream.WriteByte(0xFF);
-            
+
             // Anzahl Komponenten
             bitStream.WriteByte(0x03);
 
@@ -506,25 +517,81 @@ namespace JPEG_Encoder
             bitStream.WriteByte(0x01);
             bitStream.WriteByte(0x22);
             bitStream.WriteByte(0x00);
-            
+
             // Komponente 2
             bitStream.WriteByte(0x02);
             bitStream.WriteByte(0x11);
             bitStream.WriteByte(0x01);
-            
+
             // Komponente 3
             bitStream.WriteByte(0x03);
             bitStream.WriteByte(0x11);
             bitStream.WriteByte(0x01);
             // ENDE SOF0
-            
-            
+
+
             // EOI
             bitStream.WriteByte(0xFF);
             bitStream.WriteByte(0xD9);
 
-            
+
             bitStream.SaveStreamAsFile("../../../img/testImage.jpg");
         }
+        public double[] GetRelative(Matrix<double> input)
+        {
+            double[] freq = new double[255];
+
+            double[,] arr = input.AsArray();
+            int adress;
+
+            for (int i = 0; i < input.ColumnCount; i++)
+            {
+                for (int j = 0; j < input.RowCount; j++)
+                {
+                    adress = (int)arr[i, j];
+                    freq[adress]++;
+                }
+            }
+            for (int i = 0; i < freq.Length; i++)
+            {
+                freq[i] /= 255;
+            }
+            return freq;
+
+
+
+        }
+        public double[,] GetLowPair(double[] freq)
+        {
+            double low = 0;
+            double secLow = 0;
+            double adress=0;
+            double secAdress=0;
+            double[,] lowest = new double[2,2];
+
+            for (int i = 0; i < freq.Length; i++)
+            {
+                if (low < freq[i])
+                {
+                    low = freq[i];
+                    adress = i;
+                    if (secLow < low)
+                    {
+                        secLow = freq[i];
+                        secAdress = i;
+                    }
+                }
+            }
+            lowest[0, 0] = low;
+            lowest[0, 1] = adress;
+
+            lowest[1, 0] = secLow;
+            lowest[1, 1] = secAdress;
+
+
+            return lowest;
+        }
     }
+        
 }
+
