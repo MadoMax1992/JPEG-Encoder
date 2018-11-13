@@ -29,15 +29,22 @@ namespace JPEG_Encoder
                 left = Left.Traverse(symbol, leftPath);
             }
 
-            if (Right == null) return left ?? right;
-            
-            var rightPath = new List<bool>();
-            rightPath.AddRange(data);
-            rightPath.Add(true);
-
-            right = Right.Traverse(symbol, rightPath);
-
-            return left ?? right;
+            if (Right != null)
+            {
+                List<bool> rightPath = new List<bool>();
+                rightPath.AddRange(data);
+                rightPath.Add(true);
+                right = Right.Traverse(symbol, rightPath);
+            }
+ 
+            if (left != null)
+            {
+                return left;
+            }
+            else
+            {
+                return right;
+            }
         }
     }
 }
