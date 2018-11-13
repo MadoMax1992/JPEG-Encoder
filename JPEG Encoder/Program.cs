@@ -9,24 +9,24 @@ namespace JPEG_Encoder
             // flip first bit of int
             // y&~(1 << 1) 
 
-            const string filename = "../../../img/TestPicture2.ppm";
-            
-            var testImage = new Image(filename, 4);
-            
-//            Image.WriteJpeg();
-            
-            
-            testImage.ChangeToYCbCr();
-
-            var array = testImage.TransformMatrixToArray(testImage.R);
-
-            var tree = new HuffmanTree();
-            
-            tree.Build(array);
-
-            var encoded = tree.Encode(array);
-
-            var decoded = tree.Decode(encoded);
+//            const string filename = "../../../img/TestPicture2.ppm";
+//            
+//            var testImage = new Image(filename, 4);
+//            
+////            Image.WriteJpeg();
+//            
+//            
+//            testImage.ChangeToYCbCr();
+//
+//            var array = testImage.TransformMatrixToArray(testImage.R);
+//
+//            var tree = new HuffmanTree();
+//            
+//            tree.Build(array);
+//
+//            var encoded = tree.Encode(array);
+//
+//            var decoded = tree.Decode(encoded);
 //            Console.WriteLine("Decoded: ");
 //            foreach (var i in decoded)
 //            {
@@ -74,27 +74,28 @@ namespace JPEG_Encoder
             //            }
 
 
-            //            HuffmanTreeTest();
+            HuffmanTreeTest();
 
 
         }
 
         private static void HuffmanTreeTest()
         {
-            var input = new int[] {255, 255, 255, 254, 224, 243, 254, 10, 21, 235};
-//            var input = "test";
+            var input = new[] {1,1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4};
 
             var huffmanTree = new HuffmanTree();
 
             huffmanTree.Build(input);
-            Console.WriteLine(huffmanTree.Root.Right.Left.Symbol);
+           
             foreach (var symbol in huffmanTree.Frequencies)
             {
                 Console.Write(symbol.Key + ": ");
                 Console.WriteLine(symbol.Value);
             }
 
-            var encoded = huffmanTree.Encode(input);
+            var input2 = new[] {2};
+
+            var encoded = huffmanTree.Encode(input2);
 
             Console.WriteLine("Encoded: ");
             foreach (bool bit in encoded)
@@ -110,7 +111,7 @@ namespace JPEG_Encoder
             {
                 Console.Write(i + " ");
             }
-
+            Console.WriteLine();
             Console.WriteLine("End");
         }
     }

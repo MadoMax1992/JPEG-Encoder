@@ -35,14 +35,26 @@ namespace JPEG_Encoder
                 });
             }
 
+            Node right = null;
             while (_nodes.Count > 1)
             {
                 var orderedNodes = _nodes.OrderBy(node => node.Frequency).ToList();
-
+                Console.WriteLine("node: " + orderedNodes.Take(1).ToArray()[0].Symbol);
                 if (orderedNodes.Count >= 2)
                 {
-                    //Take first two items
-                    var taken = orderedNodes.Take(2).ToList();
+                    var taken = new List<Node>();
+                    if (right == null)
+                    {
+                        //Take first two items
+                        taken = orderedNodes.Take(2).ToList(); 
+                    }
+                    else
+                    {
+                        //Only take one item
+                        taken = orderedNodes.Take(1).ToList();
+                        taken.Add(right);
+                    }
+
                     
                     //Create a parent node by combining the frequencies
                     var parent = new Node
@@ -56,6 +68,7 @@ namespace JPEG_Encoder
                     _nodes.Remove(taken[0]);
                     _nodes.Remove(taken[1]);
                     _nodes.Add(parent);
+                    right = parent;
                 }
 
                 Root = _nodes.FirstOrDefault();
@@ -69,6 +82,7 @@ namespace JPEG_Encoder
             foreach (var symbol in source)
             {
                 var encodedSymbol = Root.Traverse(symbol, new List<bool>());
+                Console.WriteLine("encodedSymbol: " + encodedSymbol.ToArray()[0]);
                 encodedSource.AddRange(encodedSymbol);
             }
             
