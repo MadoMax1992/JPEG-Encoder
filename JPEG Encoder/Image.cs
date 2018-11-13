@@ -12,9 +12,9 @@ namespace JPEG_Encoder
         private readonly int _height;
         private readonly int _depth;
         
-        public Matrix<double> R;
-        public Matrix<double> G;
-        public Matrix<double> B;
+        public readonly Matrix<double> R;
+        public readonly Matrix<double> G;
+        public readonly Matrix<double> B;
         public Matrix<double> Y;
         public Matrix<double> Cb;
         public Matrix<double> Cr;
@@ -257,14 +257,14 @@ namespace JPEG_Encoder
             try
             {
 
-                for (var x = 0; x < reSampledMatrix.RowCount; x++)
+                for (var row = 0; row < reSampledMatrix.RowCount; row++)
                 {
-                    for (var y = 0; y < reSampledMatrix.ColumnCount; y++)
+                    for (var column = 0; column < reSampledMatrix.ColumnCount; column++)
                     {
                         var index = 0;
                         while (index < factor)
                         {
-                            reSampledMatrix[x, y] = channelMatrix[x, y / factor];
+                            reSampledMatrix[row, column] = channelMatrix[row, column / factor];
                             index++;
                         }
                     }
@@ -291,14 +291,14 @@ namespace JPEG_Encoder
             writer.WriteLine(_width + " " + _height);
             writer.WriteLine(_depth);
             
-            for (var x = 0; x < _height; x++)
+            for (var row = 0; row < _height; row++)
             {
                 
-                for (var y = 0; y < _width; y++)
+                for (var column = 0; column < _width; column++)
                 {
-                    writer.WriteLine((int)Y[x, y]);
-                    writer.WriteLine((int)Y[x, y]);
-                    writer.WriteLine((int)Y[x, y]);
+                    writer.WriteLine((int)Y[row, column]);
+                    writer.WriteLine((int)Y[row, column]);
+                    writer.WriteLine((int)Y[row, column]);
                 }
             }
             
@@ -313,14 +313,14 @@ namespace JPEG_Encoder
             writer.WriteLine(_width + " " + _height);
             writer.WriteLine(_depth);
             
-            for (var x = 0; x < _height; x++)
+            for (var row = 0; row < _height; row++)
             {
                 
-                for (var y = 0; y < _width; y++)
+                for (var column = 0; column < _width; column++)
                 {
-                    writer.WriteLine((int)Cb[x, y]);
-                    writer.WriteLine((int)(Cb[x, y] * -0.344136));
-                    writer.WriteLine((int)(Cb[x, y] * 1.772));
+                    writer.WriteLine((int)Cb[row, column]);
+                    writer.WriteLine((int)(Cb[row, column] * -0.344136));
+                    writer.WriteLine((int)(Cb[row, column] * 1.772));
                 }
             }
             
@@ -335,14 +335,14 @@ namespace JPEG_Encoder
             writer.WriteLine(_width + " " + _height);
             writer.WriteLine(_depth);
             
-            for (var x = 0; x < _height; x++)
+            for (var row = 0; row < _height; row++)
             {
                 
-                for (var y = 0; y < _width; y++)
+                for (var column = 0; column < _width; column++)
                 {
-                    writer.WriteLine((int)(Cr[x, y] * 1.402));
-                    writer.WriteLine((int)(Cr[x, y] * -0.714136));
-                    writer.WriteLine((int)(Cr[x, y]));
+                    writer.WriteLine((int)(Cr[row, column] * 1.402));
+                    writer.WriteLine((int)(Cr[row, column] * -0.714136));
+                    writer.WriteLine((int)Cr[row, column]);
                 }
             }
             
@@ -383,11 +383,11 @@ namespace JPEG_Encoder
             bitStream.WriteByte(0xd8);
             
             
-            // APP0
+            // Start of APP0
             bitStream.WriteByte(0xff);
             bitStream.WriteByte(0xe0);
             
-            // Laenge des Segment
+            // Length of segment
             bitStream.WriteByte(0x00);
             bitStream.WriteByte(0x10);
             // JFIF
@@ -401,20 +401,20 @@ namespace JPEG_Encoder
             bitStream.WriteByte(0x01);
             bitStream.WriteByte(0x01);
             
-            // Pixelgroesse
+            // Pixel size
             bitStream.WriteByte(0x00);
             
-            // x-Dichte
+            // x-Density
             bitStream.WriteByte(0x00);
             bitStream.WriteByte(0x48);
             
-            // y-Dichte
+            // y-Density
             bitStream.WriteByte(0x00);
             bitStream.WriteByte(0x48);
             
             bitStream.WriteByte(0x00);
             bitStream.WriteByte(0x00);
-            // Ende APP0
+            // End of APP0
             
             // SOF0
             bitStream.WriteByte(0xFF);
@@ -424,35 +424,35 @@ namespace JPEG_Encoder
             bitStream.WriteByte(0x00);
             bitStream.WriteByte(0x11);
             
-            // Prescision
+            // Precision
             bitStream.WriteByte(0x08);
 
-            // Bildgroesse y
+            // Picture size y
             bitStream.WriteByte(0x00);
             bitStream.WriteByte(0xFF);
 
-            // Bildgroesse x
+            // Picture size x
             bitStream.WriteByte(0x00);
             bitStream.WriteByte(0xFF);
             
-            // Anzahl Komponenten = 3
+            // Component Count = 3
             bitStream.WriteByte(0x03);
 
-            // Komponente 1 
+            // Component 1 
             bitStream.WriteByte(0x01);
             bitStream.WriteByte(0x22);
             bitStream.WriteByte(0x00);
             
-            // Komponente 2
+            // Component 2
             bitStream.WriteByte(0x02);
             bitStream.WriteByte(0x11);
             bitStream.WriteByte(0x01);
             
-            // Komponente 3
+            // Component 3
             bitStream.WriteByte(0x03);
             bitStream.WriteByte(0x11);
             bitStream.WriteByte(0x01);
-            // ENDE SOF0
+            // End of SOF0
             
             
             // EOI
@@ -461,6 +461,20 @@ namespace JPEG_Encoder
 
             
             bitStream.SaveStreamAsFile("../../../img/testImage.jpg");
+        }
+        
+        public int[] TransformMatrixToArray(Matrix<double> matrix)
+        {
+            var array = new int[matrix.ToArray().Length];
+            var index = 0;
+
+            foreach(var i in matrix.ToArray())
+            {
+                array[index] = (int)i;
+                index++;
+            }
+
+            return array;
         }
     }
 }

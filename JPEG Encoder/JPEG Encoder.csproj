@@ -38,8 +38,8 @@
       <HintPath>..\packages\rubendal.BitStream.1.2\lib\net40\BitStreams.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MathNet.Numerics, Version=4.5.1.0, Culture=neutral, PublicKeyToken=null">
-      <HintPath>..\packages\MathNet.Numerics.4.5.1\lib\net461\MathNet.Numerics.dll</HintPath>
+    <Reference Include="MathNet.Numerics, Version=4.7.0.0, Culture=neutral, PublicKeyToken=null">
+      <HintPath>..\packages\MathNet.Numerics.4.7.0\lib\net461\MathNet.Numerics.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />

@@ -1,15 +1,18 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using BitStreams;
 
 namespace JPEG_Encoder
 {
     public class HuffmanTree
     {
-        private readonly List<Node> nodes = new List<Node>();
+        private readonly List<Node> _nodes = new List<Node>();
         public Node Root { get; private set; }
         public readonly Dictionary<int, int> Frequencies = new Dictionary<int, int>();
+        public readonly Dictionary<byte, int> LookupTable = new Dictionary<byte, int>();
 
         public void Build(IEnumerable<int> source)
         {
@@ -25,16 +28,16 @@ namespace JPEG_Encoder
 
             foreach (var symbol in Frequencies)
             {
-                nodes.Add(new Node()
+                _nodes.Add(new Node
                 {
                     Symbol = symbol.Key,
                     Frequency = symbol.Value
                 });
             }
 
-            while (nodes.Count > 1)
+            while (_nodes.Count > 1)
             {
-                var orderedNodes = nodes.OrderBy(node => node.Frequency).ToList();
+                var orderedNodes = _nodes.OrderBy(node => node.Frequency).ToList();
 
                 if (orderedNodes.Count >= 2)
                 {
@@ -42,7 +45,7 @@ namespace JPEG_Encoder
                     var taken = orderedNodes.Take(2).ToList();
                     
                     //Create a parent node by combining the frequencies
-                    var parent = new Node()
+                    var parent = new Node
                     {
                         Symbol = 256,
                         Frequency = taken[0].Frequency + taken[1].Frequency,
@@ -50,12 +53,12 @@ namespace JPEG_Encoder
                         Right = taken[1]
                     };
 
-                    nodes.Remove(taken[0]);
-                    nodes.Remove(taken[1]);
-                    nodes.Add(parent);
+                    _nodes.Remove(taken[0]);
+                    _nodes.Remove(taken[1]);
+                    _nodes.Add(parent);
                 }
 
-                Root = nodes.FirstOrDefault();
+                Root = _nodes.FirstOrDefault();
             }
         }
 
@@ -66,7 +69,6 @@ namespace JPEG_Encoder
             foreach (var symbol in source)
             {
                 var encodedSymbol = Root.Traverse(symbol, new List<bool>());
-                Console.WriteLine(encodedSymbol.ToArray()[0]);
                 encodedSource.AddRange(encodedSymbol);
             }
             
@@ -97,7 +99,6 @@ namespace JPEG_Encoder
                     }
                 }
 
-                // ReSharper disable once InvertIf
                 if (IsLeaf(current))
                 {
                     decoded.Add(current.Symbol);
@@ -109,9 +110,9 @@ namespace JPEG_Encoder
         }
 
 
-        private bool IsLeaf(Node node)
+        private static bool IsLeaf(Node node)
         {
-            return (node.Left == null && node.Right == null);
+            return node.Left == null && node.Right == null;
         }
     }
 }
