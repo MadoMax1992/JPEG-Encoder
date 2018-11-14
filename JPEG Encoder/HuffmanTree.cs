@@ -1,7 +1,11 @@
 using System;
+using System.CodeDom.Compiler;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
+using BitStreams;
 
 namespace JPEG_Encoder
 {
@@ -10,7 +14,7 @@ namespace JPEG_Encoder
         private readonly List<Node> _nodes = new List<Node>();
         public Node Root { get; private set; }
         public readonly Dictionary<int, int> Frequencies = new Dictionary<int, int>();
-        public readonly Dictionary<byte, int> LookupTable = new Dictionary<byte, int>();
+        public readonly Dictionary<int, Node> LookupTable = new Dictionary<int, Node>();
 
         public void Build(IEnumerable<int> source)
         {
@@ -26,11 +30,15 @@ namespace JPEG_Encoder
 
             foreach (var symbol in Frequencies)
             {
-                _nodes.Add(new Node
-                {
-                    Symbol = symbol.Key,
-                    Frequency = symbol.Value
-                });
+                Node tmp = new Node
+                    {
+                        Symbol = symbol.Key,
+                        Frequency = symbol.Value
+                    };
+                    
+                _nodes.Add(tmp);
+                
+                LookupTable.Add(symbol.Key, tmp);
             }
 
             while (_nodes.Count > 1)
@@ -76,28 +84,29 @@ namespace JPEG_Encoder
             
         }
 
-        public BitArray Encode(IEnumerable<int> source)
+        public BitStream Encode(IEnumerable<int> source)
         {
-            var encodedSource = new List<bool>();
+            var encodedSource = new BitStream(new MemoryStream());
 
             foreach (var symbol in source)
             {
-                var encodedSymbol = Root.Traverse(symbol, new List<bool>());
-                encodedSource.AddRange(encodedSymbol);
+                for (int i = 0; i < LookupTable[symbol].Depth; i++)
+                {
+                    encodedSource.WriteBit((LookupTable[symbol].Address >> i) % 2);
+                }
             }
             
-            var bits = new BitArray(encodedSource.ToArray());
-
-            return bits;
+            return encodedSource;
         }
 
-        public IEnumerable<int> Decode(BitArray bits)
+        public IEnumerable<int> Decode(BitStream bits)
         {
             var current = Root;
             var decoded = new List<int>();
 
-            foreach (bool bit in bits)
+            for (int i = 0; i < bits.Length; i++)
             {
+                var bit = bits.ReadBit().AsBool();
                 if (bit)
                 {
                     if (current.Right != null)

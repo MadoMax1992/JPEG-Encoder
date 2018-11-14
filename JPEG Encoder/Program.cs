@@ -9,7 +9,7 @@ namespace JPEG_Encoder
             // flip first bit of int
             // y&~(1 << 1) 
 
-            const string filename = "../../../img/blackbuck_ascii.ppm";
+            const string filename = "../../../img/TestPicture2.ppm";
             
             var testImage = new Image(filename, 4);
             
@@ -24,13 +24,13 @@ namespace JPEG_Encoder
             
             tree.Build(array);
 
-            var encodeSource = new[] {1};
+            var encodeSource = new[] {255};
             var encoded = tree.Encode(encodeSource);
             
             Console.WriteLine("Encoded: ");
-            foreach (bool bit in encoded)
+            for (int i = 0; i < encoded.Length; i++)
             {
-                Console.Write((bit ? 1 : 0) + " ");
+                Console.Write(encoded.ReadBit().AsInt() + " ");
             }
 
             Console.WriteLine();
@@ -102,9 +102,9 @@ namespace JPEG_Encoder
             var encoded = huffmanTree.Encode(input2);
 
             Console.WriteLine("Encoded: ");
-            foreach (bool bit in encoded)
+            for (int i = 0; i < encoded.Length; i++)
             {
-                Console.Write((bit ? 1 : 0) + " ");
+                Console.Write(encoded.ReadBit().AsInt() + " ");
             }
 
             Console.WriteLine();
