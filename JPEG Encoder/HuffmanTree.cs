@@ -60,6 +60,9 @@ namespace JPEG_Encoder
                         Right = taken[1]
                     };
 
+                    taken[0].PushAddress(false);
+                    taken[1].PushAddress(true);
+
                     _nodes.Remove(taken[0]);
                     _nodes.Remove(taken[1]);
                     _nodes.Add(parent);
@@ -87,15 +90,19 @@ namespace JPEG_Encoder
         public BitStream Encode(IEnumerable<int> source)
         {
             var encodedSource = new BitStream(new MemoryStream());
+            encodedSource.AutoIncreaseStream = true;
+            
 
             foreach (var symbol in source)
             {
                 for (int i = 0; i < LookupTable[symbol].Depth; i++)
                 {
+                   // encodedSource.GetStream().SetLength(encodedSource.GetStream().Length + 1);
                     encodedSource.WriteBit((LookupTable[symbol].Address >> i) % 2);
                 }
             }
-            
+
+            encodedSource.Seek(0, 1);
             return encodedSource;
         }
 
@@ -103,30 +110,38 @@ namespace JPEG_Encoder
         {
             var current = Root;
             var decoded = new List<int>();
-
-            for (int i = 0; i < bits.Length; i++)
+            
+            try
             {
-                var bit = bits.ReadBit().AsBool();
-                if (bit)
-                {
-                    if (current.Right != null)
-                    {
-                        current = current.Right;
-                    }
-                }
-                else
-                {
-                    if (current.Left != null)
-                    {
-                        current = current.Left;
-                    }
-                }
 
-                if (IsLeaf(current))
+                for (int i = 0; true; i++)
                 {
-                    decoded.Add(current.Symbol);
-                    current = Root;
+                    var bit = bits.ReadBit().AsBool();
+                    if (bit)
+                    {
+                        if (current.Right != null)
+                        {
+                            current = current.Right;
+                        }
+                    }
+                    else
+                    {
+                        if (current.Left != null)
+                        {
+                            current = current.Left;
+                        }
+                    }
+
+                    if (IsLeaf(current))
+                    {
+                        decoded.Add(current.Symbol);
+                        current = Root;
+                    }
                 }
+            }
+            catch (System.IO.IOException e)
+            {
+                // Console.WriteLine(e);
             }
 
             return decoded.ToArray();

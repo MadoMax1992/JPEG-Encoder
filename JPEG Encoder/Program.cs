@@ -24,13 +24,21 @@ namespace JPEG_Encoder
             
             tree.Build(array);
 
-            var encodeSource = new[] {255};
+            var encodeSource = new[] {255, 255, 255, 255, 255, 0, 0,0 ,0 ,0 ,0, 255, 255};
             var encoded = tree.Encode(encodeSource);
             
             Console.WriteLine("Encoded: ");
-            for (int i = 0; i < encoded.Length; i++)
+            
+            try
             {
-                Console.Write(encoded.ReadBit().AsInt() + " ");
+                for (int i = 0; true; i++)
+                {
+                    Console.Write(encoded.ReadBit().AsInt() + " ");
+                }
+            }
+            catch (System.IO.IOException e)
+            {
+                //Console.WriteLine(e);
             }
 
             Console.WriteLine();

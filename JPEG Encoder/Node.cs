@@ -16,6 +16,10 @@ namespace JPEG_Encoder
         {
             Address = (Address << 1) + (booly ? 1 : 0);
             Depth++;
+
+            Right?.PushAddress(booly);
+            Left?.PushAddress(booly);
+            
             return this;
         }
 
