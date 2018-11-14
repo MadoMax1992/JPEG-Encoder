@@ -9,29 +9,37 @@ namespace JPEG_Encoder
             // flip first bit of int
             // y&~(1 << 1) 
 
-//            const string filename = "../../../img/TestPicture2.ppm";
-//            
-//            var testImage = new Image(filename, 4);
-//            
-////            Image.WriteJpeg();
+            const string filename = "../../../img/blackbuck_ascii.ppm";
+            
+            var testImage = new Image(filename, 4);
+            
+//            Image.WriteJpeg();
 //            
 //            
 //            testImage.ChangeToYCbCr();
 //
-//            var array = testImage.TransformMatrixToArray(testImage.R);
-//
-//            var tree = new HuffmanTree();
-//            
-//            tree.Build(array);
-//
-//            var encoded = tree.Encode(array);
-//
-//            var decoded = tree.Decode(encoded);
-//            Console.WriteLine("Decoded: ");
-//            foreach (var i in decoded)
-//            {
-//                Console.Write(i + " ");
-//            }
+            var array = testImage.TransformMatrixToArray(testImage.R);
+
+            var tree = new HuffmanTree();
+            
+            tree.Build(array);
+
+            var encodeSource = new[] {1};
+            var encoded = tree.Encode(encodeSource);
+            
+            Console.WriteLine("Encoded: ");
+            foreach (bool bit in encoded)
+            {
+                Console.Write((bit ? 1 : 0) + " ");
+            }
+
+            Console.WriteLine();
+            var decoded = tree.Decode(encoded);
+            Console.WriteLine("Decoded: ");
+            foreach (var i in decoded)
+            {
+                Console.Write(i + " ");
+            }
 
 //            filename = filename.Substring(0, filename.Length - 4);
 //            testImage.WriteImageOnlyFromY(filename);
@@ -73,15 +81,11 @@ namespace JPEG_Encoder
             //                Console.WriteLine((int) bitStream2.ReadBit());
             //            }
 
-
-            HuffmanTreeTest();
-
-
         }
 
         private static void HuffmanTreeTest()
         {
-            var input = new[] {1,1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4};
+            var input = new[] {1,5,4,3,4,5,20,54,65,65,65,4,33,23,24,26,27,2,3,4,2,1,2,3,2,1,2,3,2,3,4,5,6,4,3,2,1,2,3,5,6,12,10,12,13,14,15,17,17,20,12,32,43,43,43,32,32,32};
 
             var huffmanTree = new HuffmanTree();
 
@@ -93,7 +97,7 @@ namespace JPEG_Encoder
                 Console.WriteLine(symbol.Value);
             }
 
-            var input2 = new[] {2};
+            var input2 = new[] {1};
 
             var encoded = huffmanTree.Encode(input2);
 

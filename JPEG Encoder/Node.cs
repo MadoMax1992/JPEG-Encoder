@@ -28,7 +28,9 @@ namespace JPEG_Encoder
 
                 left = Left.Traverse(symbol, leftPath);
             }
-
+            
+            
+            // zusätzliche Abfrage, falls Symbol schon gefunden wurde -> nicht ausführen
             if (Right != null)
             {
                 List<bool> rightPath = new List<bool>();
