@@ -6,6 +6,8 @@ namespace JPEG_Encoder
     {
         public static void Main(string[] args)
         {
+            HuffmanTreeTest();
+            Console.ReadKey();
             // flip first bit of int
             // y&~(1 << 1) 
 
@@ -105,26 +107,28 @@ namespace JPEG_Encoder
                 Console.WriteLine(symbol.Value);
             }
 
-            var input2 = new[] {1};
+ 
 
-            var encoded = huffmanTree.Encode(input2);
+            //var input2 = new[] {1};
 
-            Console.WriteLine("Encoded: ");
-            for (int i = 0; i < encoded.Length; i++)
-            {
-                Console.Write(encoded.ReadBit().AsInt() + " ");
-            }
+            //var encoded = huffmanTree.Encode(input2);
 
-            Console.WriteLine();
+            //Console.WriteLine("Encoded: ");
+            //for (int i = 0; i < encoded.Length; i++)
+            //{
+            //    Console.Write(encoded.ReadBit().AsInt() + " ");
+            //}
 
-            var decoded = huffmanTree.Decode(encoded);
-            Console.WriteLine("Decoded: ");
-            foreach (var i in decoded)
-            {
-                Console.Write(i + " ");
-            }
-            Console.WriteLine();
-            Console.WriteLine("End");
+            //Console.WriteLine();
+
+            //var decoded = huffmanTree.Decode(encoded);
+            //Console.WriteLine("Decoded: ");
+            //foreach (var i in decoded)
+            //{
+            //    Console.Write(i + " ");
+            //}
+            //Console.WriteLine();
+            //Console.WriteLine("End");
         }
     }
 }

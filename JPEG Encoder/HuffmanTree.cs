@@ -76,15 +76,21 @@ namespace JPEG_Encoder
         public void ShiftMostRightSymbol()
         {
             Node mostRightNode = null;
+            Node secMostRightNode = null;
+            Node wildCard = new Node();
             var current = Root;
 
-            while (current.Right != null)
+            while (current.Right.Right != null)
             {
                 current = current.Right;
             }
+            secMostRightNode = current;
+            mostRightNode = secMostRightNode.Right;
 
-            mostRightNode = current;
-            
+            secMostRightNode.Right = wildCard;
+            wildCard.Left = mostRightNode;
+            mostRightNode.Depth++;
+                  
         }
 
         public BitStream Encode(IEnumerable<int> source)
