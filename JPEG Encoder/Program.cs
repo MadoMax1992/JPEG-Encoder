@@ -10,36 +10,31 @@ namespace JPEG_Encoder
             // y&~(1 << 1) 
 
             const string filename = "../../../img/TestPicture2.ppm";
-            
+
             var testImage = new Image(filename, 4);
-            
+
 //            Image.WriteJpeg();
 //            
 //            
 //            testImage.ChangeToYCbCr();
 //
             var array = testImage.TransformMatrixToArray(testImage.R);
+            array = new[] {255, 255, 25, 25, 25, 0, 10, 10, 0, 0, 0, 255, 255};
 
             var tree = new HuffmanTree();
-            
-            tree.Build(array);
 
-            var encodeSource = new[] {255, 255, 255, 255, 255, 0, 0,0 ,0 ,0 ,0, 255, 255};
-            var encoded = tree.Encode(encodeSource);
-            
+            tree.Build(array);
+            tree.ShiftMostRightSymbol();
+
+            var encoded = tree.Encode(array);
+
             Console.WriteLine("Encoded: ");
-            
-            try
+
+            for (int i = 0; i < encoded.FullBitLength; i++)
             {
-                for (int i = 0; true; i++)
-                {
-                    Console.Write(encoded.ReadBit().AsInt() + " ");
-                }
+                Console.Write(encoded.ReadBit().AsInt() + " ");
             }
-            catch (System.IO.IOException e)
-            {
-                //Console.WriteLine(e);
-            }
+            encoded.Seek(0,0);
 
             Console.WriteLine();
             var decoded = tree.Decode(encoded);
@@ -88,17 +83,20 @@ namespace JPEG_Encoder
             //            {
             //                Console.WriteLine((int) bitStream2.ReadBit());
             //            }
-
         }
 
         private static void HuffmanTreeTest()
         {
-            var input = new[] {1,5,4,3,4,5,20,54,65,65,65,4,33,23,24,26,27,2,3,4,2,1,2,3,2,1,2,3,2,3,4,5,6,4,3,2,1,2,3,5,6,12,10,12,13,14,15,17,17,20,12,32,43,43,43,32,32,32};
+            var input = new[]
+            {
+                1, 5, 4, 3, 4, 5, 20, 54, 65, 65, 65, 4, 33, 23, 24, 26, 27, 2, 3, 4, 2, 1, 2, 3, 2, 1, 2, 3, 2, 3, 4,
+                5, 6, 4, 3, 2, 1, 2, 3, 5, 6, 12, 10, 12, 13, 14, 15, 17, 17, 20, 12, 32, 43, 43, 43, 32, 32, 32
+            };
 
             var huffmanTree = new HuffmanTree();
 
             huffmanTree.Build(input);
-           
+
             foreach (var symbol in huffmanTree.Frequencies)
             {
                 Console.Write(symbol.Key + ": ");
@@ -123,6 +121,7 @@ namespace JPEG_Encoder
             {
                 Console.Write(i + " ");
             }
+
             Console.WriteLine();
             Console.WriteLine("End");
         }

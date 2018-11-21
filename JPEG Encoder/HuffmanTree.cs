@@ -31,26 +31,36 @@ namespace JPEG_Encoder
             foreach (var symbol in Frequencies)
             {
                 Node tmp = new Node
-                    {
-                        Symbol = symbol.Key,
-                        Frequency = symbol.Value
-                    };
-                    
+                {
+                    Symbol = symbol.Key,
+                    Frequency = symbol.Value
+                };
+
                 _nodes.Add(tmp);
-                
+
                 LookupTable.Add(symbol.Key, tmp);
             }
 
+            Node right = null;
             while (_nodes.Count > 1)
             {
                 var orderedNodes = _nodes.OrderBy(node => node.Frequency).ToList();
-                Console.WriteLine("node: " + orderedNodes.Take(1).ToArray()[0].Symbol);
+                //Console.WriteLine("node: " + orderedNodes.Take(1).ToArray()[0].Symbol);
                 if (orderedNodes.Count >= 2)
                 {
-                    //Take first two items
-                    var taken = orderedNodes.Take(2).ToList(); 
+                    var taken = new List<Node>();
+                    if (right == null) 
+                    {	
+                        //Take first two items	
+                        taken = orderedNodes.Take(2).ToList(); 	
+                    }	
+                    else	
+                    {	
+                        //Only take one item	
+                        taken = orderedNodes.Take(1).ToList();	
+                        taken.Add(right);	
+                    }
 
-                    
                     //Create a parent node by combining the frequencies
                     var parent = new Node
                     {
@@ -66,10 +76,10 @@ namespace JPEG_Encoder
                     _nodes.Remove(taken[0]);
                     _nodes.Remove(taken[1]);
                     _nodes.Add(parent);
+                    right = parent;
                 }
-
             }
-            
+
             Root = _nodes.FirstOrDefault();
         }
 
@@ -77,71 +87,79 @@ namespace JPEG_Encoder
         {
             Node mostRightNode = null;
             var current = Root;
+            
+            if (current.Right == null)
+                throw new Exception("no right node at all");
 
-            while (current.Right != null)
+            while (current.Right.Right != null)
             {
                 current = current.Right;
             }
 
-            mostRightNode = current;
+            mostRightNode = current.Right;
+            var secondMostRightNode = current;
             
+            // Unshifts a 0 to the inverted Address for the lookup
+            mostRightNode.Depth++;
+            
+            // Adjust the tree as we still use it to decode
+            var wildcard = new Node();
+
+            secondMostRightNode.Right = new Node
+            {
+                Symbol = 256,
+                Left = mostRightNode,
+                Right = wildcard
+            };
         }
 
-        public BitStream Encode(IEnumerable<int> source)
+        public BitStreamPP Encode(IEnumerable<int> source)
         {
-            var encodedSource = new BitStream(new MemoryStream());
+            var encodedSource = new BitStreamPP(new MemoryStream());
             encodedSource.AutoIncreaseStream = true;
-            
+
 
             foreach (var symbol in source)
             {
                 for (int i = 0; i < LookupTable[symbol].Depth; i++)
                 {
-                   // encodedSource.GetStream().SetLength(encodedSource.GetStream().Length + 1);
                     encodedSource.WriteBit((LookupTable[symbol].Address >> i) % 2);
                 }
             }
 
-            encodedSource.Seek(0, 1);
+            encodedSource.Seek(0,0);
+            
             return encodedSource;
         }
 
-        public IEnumerable<int> Decode(BitStream bits)
+        public IEnumerable<int> Decode(BitStreamPP bits)
         {
             var current = Root;
             var decoded = new List<int>();
-            
-            try
+
+            for (int i = 0; i < bits.FullBitLength; i++)
             {
-
-                for (int i = 0; true; i++)
+                var bit = bits.ReadBit().AsBool();
+                if (bit)
                 {
-                    var bit = bits.ReadBit().AsBool();
-                    if (bit)
+                    if (current.Right != null)
                     {
-                        if (current.Right != null)
-                        {
-                            current = current.Right;
-                        }
-                    }
-                    else
-                    {
-                        if (current.Left != null)
-                        {
-                            current = current.Left;
-                        }
-                    }
-
-                    if (IsLeaf(current))
-                    {
-                        decoded.Add(current.Symbol);
-                        current = Root;
+                        current = current.Right;
                     }
                 }
-            }
-            catch (System.IO.IOException e)
-            {
-                // Console.WriteLine(e);
+                else
+                {
+                    if (current.Left != null)
+                    {
+                        current = current.Left;
+                    }
+                }
+
+                if (IsLeaf(current))
+                {
+                    decoded.Add(current.Symbol);
+                    current = Root;
+                }
             }
 
             return decoded.ToArray();

@@ -22,45 +22,5 @@ namespace JPEG_Encoder
             
             return this;
         }
-
-        public List<bool> Traverse(int symbol, List<bool> data)
-        {
-            // Leaf
-            if (Right == null && Left == null)
-            {
-                return symbol.Equals(Symbol) ? data : null;
-            }
-
-            List<bool> left = null;
-            List<bool> right = null;
-
-            if (Left != null)
-            {
-                var leftPath = new List<bool>();
-                leftPath.AddRange(data);
-                leftPath.Add(false);
-
-                left = Left.Traverse(symbol, leftPath);
-            }
-            
-            
-            // zusätzliche Abfrage, falls Symbol schon gefunden wurde -> nicht ausführen
-            if (Right != null)
-            {
-                List<bool> rightPath = new List<bool>();
-                rightPath.AddRange(data);
-                rightPath.Add(true);
-                right = Right.Traverse(symbol, rightPath);
-            }
- 
-            if (left != null)
-            {
-                return left;
-            }
-            else
-            {
-                return right;
-            }
-        }
     }
 }
