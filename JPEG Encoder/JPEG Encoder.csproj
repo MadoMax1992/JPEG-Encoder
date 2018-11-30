@@ -71,6 +71,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BitStreamPP.cs" />
+    <Compile Include="DCT.cs" />
     <Compile Include="HuffmanTree.cs" />
     <Compile Include="Image.cs" />
     <Compile Include="Node.cs" />

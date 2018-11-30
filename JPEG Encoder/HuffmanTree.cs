@@ -11,76 +11,34 @@ namespace JPEG_Encoder
 {
     public class HuffmanTree
     {
-        private readonly List<Node> _nodes = new List<Node>();
-        public Node Root { get; private set; }
-        public readonly Dictionary<int, int> Frequencies = new Dictionary<int, int>();
-        public readonly Dictionary<int, Node> LookupTable = new Dictionary<int, Node>();
+        public Node Root = new Node();
+        public readonly BitStreamPP[] LookupTable;
 
         public void Build(IEnumerable<int> source)
         {
+            // setup
+            
+            var nodes = new List<Node>();
+            
             foreach (var i in source)
             {
-                if (!Frequencies.ContainsKey(i))
+                var nodeInd = nodes.FindIndex(el => el.Symbol == i);
+                
+                if (nodeInd >= 0)
                 {
-                    Frequencies.Add(i, 0);
+                    nodes[nodeInd].Frequency++;
                 }
-
-                Frequencies[i]++;
-            }
-
-            foreach (var symbol in Frequencies)
-            {
-                Node tmp = new Node
+                else
                 {
-                    Symbol = symbol.Key,
-                    Frequency = symbol.Value
-                };
-
-                _nodes.Add(tmp);
-
-                LookupTable.Add(symbol.Key, tmp);
-            }
-
-            Node right = null;
-            while (_nodes.Count > 1)
-            {
-                var orderedNodes = _nodes.OrderBy(node => node.Frequency).ToList();
-                //Console.WriteLine("node: " + orderedNodes.Take(1).ToArray()[0].Symbol);
-                if (orderedNodes.Count >= 2)
-                {
-                    var taken = new List<Node>();
-                    if (right == null) 
-                    {	
-                        //Take first two items	
-                        taken = orderedNodes.Take(2).ToList(); 	
-                    }	
-                    else	
-                    {	
-                        //Only take one item	
-                        taken = orderedNodes.Take(1).ToList();	
-                        taken.Add(right);	
-                    }
-
-                    //Create a parent node by combining the frequencies
-                    var parent = new Node
+                    nodes.Add(new Node()
                     {
-                        Symbol = 256,
-                        Frequency = taken[0].Frequency + taken[1].Frequency,
-                        Left = taken[0],
-                        Right = taken[1]
-                    };
-
-                    taken[0].PushAddress(false);
-                    taken[1].PushAddress(true);
-
-                    _nodes.Remove(taken[0]);
-                    _nodes.Remove(taken[1]);
-                    _nodes.Add(parent);
-                    right = parent;
+                        Frequency = 1,
+                        Symbol = i,
+                    });
                 }
             }
 
-            Root = _nodes.FirstOrDefault();
+            Root.Fill(nodes);
         }
 
         public void ShiftMostRightSymbol()
@@ -88,15 +46,15 @@ namespace JPEG_Encoder
             Node mostRightNode = null;
             var current = Root;
             
-            if (current.Right == null)
+            if (current.High == null)
                 throw new Exception("no right node at all");
 
-            while (current.Right.Right != null)
+            while (current.High.High != null)
             {
-                current = current.Right;
+                current = current.High;
             }
 
-            mostRightNode = current.Right;
+            mostRightNode = current.High;
             var secondMostRightNode = current;
             
             // Unshifts a 0 to the inverted Address for the lookup
@@ -105,11 +63,11 @@ namespace JPEG_Encoder
             // Adjust the tree as we still use it to decode
             var wildcard = new Node();
 
-            secondMostRightNode.Right = new Node
+            secondMostRightNode.High = new Node
             {
                 Symbol = 256,
-                Left = mostRightNode,
-                Right = wildcard
+                Low = mostRightNode,
+                High = wildcard
             };
         }
 
@@ -142,16 +100,16 @@ namespace JPEG_Encoder
                 var bit = bits.ReadBit().AsBool();
                 if (bit)
                 {
-                    if (current.Right != null)
+                    if (current.High != null)
                     {
-                        current = current.Right;
+                        current = current.High;
                     }
                 }
                 else
                 {
-                    if (current.Left != null)
+                    if (current.Low != null)
                     {
-                        current = current.Left;
+                        current = current.Low;
                     }
                 }
 
@@ -168,7 +126,7 @@ namespace JPEG_Encoder
 
         private static bool IsLeaf(Node node)
         {
-            return node.Left == null && node.Right == null;
+            return node.Low == null && node.High == null;
         }
     }
 }
