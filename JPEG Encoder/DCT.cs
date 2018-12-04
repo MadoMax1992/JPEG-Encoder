@@ -1,17 +1,39 @@
+using System;
 using MathNet.Numerics.LinearAlgebra;
 
 namespace JPEG_Encoder
 {
     public static class DCT
     {
+        private static readonly Matrix<double> C = Matrix<double>.Build.DenseOfArray(new[,]{
+                                                                                    {
+                                                                                        1d / Math.Sqrt(2), 1, 1, 1, 1, 1, 1
+                                                                                    }});
+
+        
+
         public static Matrix<int> naive(Matrix<double> input)
         {
             return null;
         }
 
-        public static Matrix<int> advanced(Matrix<double> input)
+        public static Matrix<int> advanced(Matrix<double> X)
         {
-            return null;
+            var a = Matrix<double>.Build.Dense(8, 8);
+            
+            for (var n = 0; n < 8; n++)
+            {
+                for (var k = 0; k < 8; k++)
+                {
+                    var aKN = C.At(k, 1) * Math.Sqrt(2d / 8) * Math.Cos((2 * n + 1) * (k * Math.PI / (2 * 8)));
+                    a[k, n] = aKN;
+                }
+            }
+            var aT = a.Transpose();
+            
+            a.Multiply(X).Multiply(aT, X);
+            
+            return X.Map(Convert.ToInt32);
         }
 
         public static Matrix<int> arai(Matrix<double> input)
@@ -119,6 +141,8 @@ namespace JPEG_Encoder
             vector[5] = (v2 - v5) / 2;
             vector[6] = (v1 - v6) / 2;
             vector[7] = (v0 - v7) / 2;
+
+            return vector;
         }
 
         private static double[] S = new double[8];
@@ -145,6 +169,30 @@ namespace JPEG_Encoder
         static DCT()
         {
             araiSetup();
+        }
+
+        static Matrix<double> Invert(Matrix<double> Y)
+        {
+            var n = Y.RowCount;
+            var X = Matrix<double>.Build.Dense(n, n);
+            for (var y = 0; y < n; y++)
+            {
+                for (var x = 0; x < n; x++)
+                {
+                    double xXy = 0;
+                    for (var i = 0; i < n; i++)
+                    {
+                        for (var j = 0; j < n; j++)
+                        {
+                            xXy += 2d / n * C.At(i, 1) * C.At(j, 1) * Y.At(j, i)
+                                     * Math.Cos((2 * x + 1) * i * Math.PI / (2d * n))
+                                     * Math.Cos((2 * y + 1) * j * Math.PI / (2d * n));
+                        }
+                    }
+                    X[y, x] = xXy;
+                }
+            }
+            return X;
         }
     }
 }
