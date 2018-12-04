@@ -1,4 +1,4 @@
-using System;
+using JPEG_Encoder.encoding;
 
 namespace JPEG_Encoder
 {

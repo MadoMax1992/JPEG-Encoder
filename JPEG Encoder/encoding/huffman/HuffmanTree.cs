@@ -1,13 +1,8 @@
 using System;
-using System.CodeDom.Compiler;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using BitStreams;
 
-namespace JPEG_Encoder
+namespace JPEG_Encoder.encoding.huffman
 {
     public class HuffmanTree
     {

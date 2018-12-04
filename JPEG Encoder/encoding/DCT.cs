@@ -1,7 +1,7 @@
 using System;
 using MathNet.Numerics.LinearAlgebra;
 
-namespace JPEG_Encoder
+namespace JPEG_Encoder.encoding
 {
     public static class DCT
     {

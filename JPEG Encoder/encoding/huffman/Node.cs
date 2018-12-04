@@ -1,11 +1,8 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using BitStreams;
-using Xunit.Sdk;
 
-namespace JPEG_Encoder
+namespace JPEG_Encoder.encoding.huffman
 {
     public class Node
     {
