@@ -6,6 +6,8 @@ namespace JPEG_Encoder
     {
         public static void Main(string[] args)
         {
+
+            DCT.TestDCT();
             // flip first bit of int
             // y&~(1 << 1) 
 
@@ -97,11 +99,11 @@ namespace JPEG_Encoder
 
             huffmanTree.Build(input);
 
-            foreach (var symbol in huffmanTree.Frequencies)
-            {
-                Console.Write(symbol.Key + ": ");
-                Console.WriteLine(symbol.Value);
-            }
+            //foreach (var symbol in huffmanTree.Frequencies)
+            //{
+            //    Console.Write(symbol.Key + ": ");
+            //    Console.WriteLine(symbol.Value);
+            //}
 
             var input2 = new[] {1};
 

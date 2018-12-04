@@ -1,12 +1,88 @@
 using MathNet.Numerics.LinearAlgebra;
+using System;
 
 namespace JPEG_Encoder
 {
     public static class DCT
     {
-        public static Matrix<int> naive(Matrix<double> input)
+     
+        public static void TestDCT()
         {
-            return null;
+            double[,] array = new double[,]
+            {
+                {28,34,19,18,22,17,17,17 },
+                {31,36,20,31,166,184,177,140 },
+                {17,17,17,95,198,185,152,160 },
+                {24,20,21,42,43,41,99,150 },
+                {19,18,19,71,63,99,98,62 },
+                {81,103,90,118,26,31,23,22 },
+                {161,160,163,148,142,146,155,96 },
+                {158,139,153,148,154,155,142,35 }
+                //{90,100 },
+                //{100,105 }
+            };
+            var M = Matrix<double>.Build;
+            var U = M.DenseOfArray(array);
+            var N = naive(U);
+            Console.WriteLine(N);
+            Console.Read();
+        }
+        public static Matrix<double> naive(Matrix<double> input)
+        {
+            //Blocksize N in Formel
+            int blockSize = 8;
+            double[,] array = new double[input.RowCount, input.ColumnCount];
+
+
+            //Zweiter Teil der Formel
+            double secoundPart = 0;
+            for (int i = 0; i < blockSize; i++)
+            {
+                for (int j = 0; j < blockSize; j++)
+                {
+                    for (int x = 0; x < input.RowCount; x++)
+                    {
+                        for (int y = 0; y < input.ColumnCount; y++)
+                        {
+                            secoundPart = secoundPart + input.At(x, y)*CosOperation(i,j);
+                        }
+                    }
+                    array[i, j] = FirstPart(i, j) * secoundPart;
+                }
+            }
+
+            var output = Matrix<double>.Build;
+            return output.DenseOfArray(array);
+
+            double FirstPart(int i, int j)
+            {
+                double firstC;
+                double secoundC;
+                if (i == 0)
+                {
+                    firstC = 1 / Math.Sqrt(2);
+                }
+                else
+                {
+                    firstC = 1;
+                }
+
+                if (j == 0)
+                {
+                    secoundC = 1 / Math.Sqrt(2);
+                }
+                else
+                {
+                    secoundC = 1;
+                }
+
+                return 2 / blockSize * firstC * secoundC;
+
+            }
+            double CosOperation(int inputIndex, int transformIndex)
+            {
+                return Math.Cos((2 * inputIndex + 1) * transformIndex * Math.PI / 2 * blockSize);
+            }
         }
 
         public static Matrix<int> advanced(Matrix<double> input)
@@ -14,15 +90,15 @@ namespace JPEG_Encoder
             return null;
         }
 
-        public static Matrix<int> arai(Matrix<double> input)
-        {
-            foreach (var row in input)
-            {
-                araiVector(row);
-            }
+        //public static Matrix<int> arai(Matrix<double> input)
+        //{
+        //    foreach (var row in input)
+        //    {
+        //        araiVector(row);
+        //    }
 
-            return input;
-        }
+        //    return input;
+        //}
 
         private static Vector<double> araiVector(Vector<double> vector)
         {
@@ -73,53 +149,53 @@ namespace JPEG_Encoder
             return vector;
         }
 
-        public static Vector<double> reverseArai(Vector<double> vector)
-        {
-            double v15 = vector[0] / S[0];
-            double v26 = vector[1] / S[1];
-            double v21 = vector[2] / S[2];
-            double v28 = vector[3] / S[3];
-            double v16 = vector[4] / S[4];
-            double v25 = vector[5] / S[5];
-            double v22 = vector[6] / S[6];
-            double v27 = vector[7] / S[7];
+        //public static Vector<double> reverseArai(Vector<double> vector)
+        //{
+        //    double v15 = vector[0] / S[0];
+        //    double v26 = vector[1] / S[1];
+        //    double v21 = vector[2] / S[2];
+        //    double v28 = vector[3] / S[3];
+        //    double v16 = vector[4] / S[4];
+        //    double v25 = vector[5] / S[5];
+        //    double v22 = vector[6] / S[6];
+        //    double v27 = vector[7] / S[7];
 
-            double v19 = (v25 - v28) / 2;
-            double v20 = (v26 - v27) / 2;
-            double v23 = (v26 + v27) / 2;
-            double v24 = (v25 + v28) / 2;
+        //    double v19 = (v25 - v28) / 2;
+        //    double v20 = (v26 - v27) / 2;
+        //    double v23 = (v26 + v27) / 2;
+        //    double v24 = (v25 + v28) / 2;
 
-            double v7 = (v23 + v24) / 2;
-            double v11 = (v21 + v22) / 2;
-            double v13 = (v23 - v24) / 2;
-            double v17 = (v21 - v22) / 2;
+        //    double v7 = (v23 + v24) / 2;
+        //    double v11 = (v21 + v22) / 2;
+        //    double v13 = (v23 - v24) / 2;
+        //    double v17 = (v21 - v22) / 2;
 
-            double v8 = (v15 + v16) / 2;
-            double v9 = (v15 - v16) / 2;
+        //    double v8 = (v15 + v16) / 2;
+        //    double v9 = (v15 - v16) / 2;
 
-            double v18 = (v19 - v20) * A[5]; // Different from original
-            double v12 = (v19 * A[4] - v18) / (A[2] * A[5] - A[2] * A[4] - A[4] * A[5]);
-            double v14 = (v18 - v20 * A[2]) / (A[2] * A[5] - A[2] * A[4] - A[4] * A[5]);
+        //    double v18 = (v19 - v20) * A[5]; // Different from original
+        //    double v12 = (v19 * A[4] - v18) / (A[2] * A[5] - A[2] * A[4] - A[4] * A[5]);
+        //    double v14 = (v18 - v20 * A[2]) / (A[2] * A[5] - A[2] * A[4] - A[4] * A[5]);
 
-            double v6 = v14 - v7;
-            double v5 = v13 / A[3] - v6;
-            double v4 = -v5 - v12;
-            double v10 = v17 / A[1] - v11;
+        //    double v6 = v14 - v7;
+        //    double v5 = v13 / A[3] - v6;
+        //    double v4 = -v5 - v12;
+        //    double v10 = v17 / A[1] - v11;
 
-            double v0 = (v8 + v11) / 2;
-            double v1 = (v9 + v10) / 2;
-            double v2 = (v9 - v10) / 2;
-            double v3 = (v8 - v11) / 2;
+        //    double v0 = (v8 + v11) / 2;
+        //    double v1 = (v9 + v10) / 2;
+        //    double v2 = (v9 - v10) / 2;
+        //    double v3 = (v8 - v11) / 2;
 
-            vector[0] = (v0 + v7) / 2;
-            vector[1] = (v1 + v6) / 2;
-            vector[2] = (v2 + v5) / 2;
-            vector[3] = (v3 + v4) / 2;
-            vector[4] = (v3 - v4) / 2;
-            vector[5] = (v2 - v5) / 2;
-            vector[6] = (v1 - v6) / 2;
-            vector[7] = (v0 - v7) / 2;
-        }
+        //    vector[0] = (v0 + v7) / 2;
+        //    vector[1] = (v1 + v6) / 2;
+        //    vector[2] = (v2 + v5) / 2;
+        //    vector[3] = (v3 + v4) / 2;
+        //    vector[4] = (v3 - v4) / 2;
+        //    vector[5] = (v2 - v5) / 2;
+        //    vector[6] = (v1 - v6) / 2;
+        //    vector[7] = (v0 - v7) / 2;
+        //}
 
         private static double[] S = new double[8];
         private static double[] A = new double[6];
