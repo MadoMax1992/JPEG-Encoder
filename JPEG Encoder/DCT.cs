@@ -11,10 +11,77 @@ namespace JPEG_Encoder
                                                                                     }});
 
         
-
-        public static Matrix<int> naive(Matrix<double> input)
+        public static void TestDCT()
         {
-            return null;
+            double[,] array = new double[,]
+            {
+                {28,34,19,18,22,17,17,17 },
+                {31,36,20,31,166,184,177,140 },
+                {17,17,17,95,198,185,152,160 },
+                {24,20,21,42,43,41,99,150 },
+                {19,18,19,71,63,99,98,62 },
+                {81,103,90,118,26,31,23,22 },
+                {161,160,163,148,142,146,155,96 },
+                {158,139,153,148,154,155,142,35 }
+                //{90,100 },
+                //{100,105 }
+            };
+            var M = Matrix<double>.Build;
+            var U = M.DenseOfArray(array);
+            var N = naive(U);
+            Console.WriteLine(N);
+            Console.Read();
+        }
+        
+        public static Matrix<double> naive(Matrix<double> input)
+        {
+            //Blocksize N in Formel
+            int blockSize = 8;
+            double[,] array = new double[input.RowCount, input.ColumnCount];
+            //Zweiter Teil der Formel
+            double secoundPart = 0;
+            for (int i = 0; i < blockSize; i++)
+            {
+                for (int j = 0; j < blockSize; j++)
+                {
+                    for (int x = 0; x < input.RowCount; x++)
+                    {
+                        for (int y = 0; y < input.ColumnCount; y++)
+                        {
+                            secoundPart = secoundPart + input.At(x, y)*CosOperation(i,j);
+                        }
+                    }
+                    array[i, j] = FirstPart(i, j) * secoundPart;
+                }
+            }
+            var output = Matrix<double>.Build;
+            return output.DenseOfArray(array);
+            double FirstPart(int i, int j)
+            {
+                double firstC;
+                double secoundC;
+                if (i == 0)
+                {
+                    firstC = 1 / Math.Sqrt(2);
+                }
+                else
+                {
+                    firstC = 1;
+                }
+                if (j == 0)
+                {
+                    secoundC = 1 / Math.Sqrt(2);
+                }
+                else
+                {
+                    secoundC = 1;
+                }
+                return 2 / blockSize * firstC * secoundC;
+            }
+            double CosOperation(int inputIndex, int transformIndex)
+            {
+                return Math.Cos((2 * inputIndex + 1) * transformIndex * Math.PI / 2 * blockSize);
+            }
         }
 
         public static Matrix<int> advanced(Matrix<double> X)

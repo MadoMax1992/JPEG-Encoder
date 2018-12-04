@@ -8,6 +8,8 @@ namespace JPEG_Encoder
         {
             // flip first bit of int
             // y&~(1 << 1) 
+            
+            DCT.TestDCT();
 
             const string filename = "../../../img/TestPicture2.ppm";
 
