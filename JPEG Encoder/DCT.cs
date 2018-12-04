@@ -7,7 +7,7 @@ namespace JPEG_Encoder
     {
         private static readonly Matrix<double> C = Matrix<double>.Build.DenseOfArray(new[,]{
                                                                                     {
-                                                                                        1d / Math.Sqrt(2), 1, 1, 1, 1, 1, 1
+                                                                                        1d / Math.Sqrt(2), 1, 1, 1, 1, 1, 1, 1
                                                                                     }});
 
         
@@ -28,9 +28,15 @@ namespace JPEG_Encoder
             };
             var M = Matrix<double>.Build;
             var U = M.DenseOfArray(array);
-            var N = naive(U);
+            var N = arai(U);
             Console.WriteLine(N);
-            Console.Read();
+
+//            N = Invert(N);
+//            Console.WriteLine(N);
+
+//            var X = Matrix<double>.Build.Dense(8,8);
+//            X = advanced(U);
+//            Console.WriteLine(X);
         }
         
         public static Matrix<double> naive(Matrix<double> input)
@@ -39,16 +45,19 @@ namespace JPEG_Encoder
             int blockSize = 8;
             double[,] array = new double[input.RowCount, input.ColumnCount];
             //Zweiter Teil der Formel
-            double secoundPart = 0;
+
             for (int i = 0; i < blockSize; i++)
             {
                 for (int j = 0; j < blockSize; j++)
                 {
+                    double secoundPart = 0;
+
                     for (int x = 0; x < input.RowCount; x++)
                     {
+
                         for (int y = 0; y < input.ColumnCount; y++)
                         {
-                            secoundPart = secoundPart + input.At(x, y)*CosOperation(i,j);
+                            secoundPart = secoundPart + input.At(x, y)*CosOperation(x,i) * CosOperation(y, j);
                         }
                     }
                     array[i, j] = FirstPart(i, j) * secoundPart;
@@ -62,29 +71,29 @@ namespace JPEG_Encoder
                 double secoundC;
                 if (i == 0)
                 {
-                    firstC = 1 / Math.Sqrt(2);
+                    firstC = 1.0 / Math.Sqrt(2);
                 }
                 else
                 {
-                    firstC = 1;
+                    firstC = 1.0;
                 }
                 if (j == 0)
                 {
-                    secoundC = 1 / Math.Sqrt(2);
+                    secoundC = 1.0 / Math.Sqrt(2);
                 }
                 else
                 {
-                    secoundC = 1;
+                    secoundC = 1.0;
                 }
-                return 2 / blockSize * firstC * secoundC;
+                return 2.0 / blockSize * firstC * secoundC;
             }
             double CosOperation(int inputIndex, int transformIndex)
             {
-                return Math.Cos((2 * inputIndex + 1) * transformIndex * Math.PI / 2 * blockSize);
+                return Math.Cos((2.0 * inputIndex + 1.0) * transformIndex * Math.PI / (2.0 * blockSize));
             }
         }
 
-        public static Matrix<int> advanced(Matrix<double> X)
+        public static Matrix<double> advanced(Matrix<double> X)
         {
             var a = Matrix<double>.Build.Dense(8, 8);
             
@@ -92,7 +101,7 @@ namespace JPEG_Encoder
             {
                 for (var k = 0; k < 8; k++)
                 {
-                    var aKN = C.At(k, 1) * Math.Sqrt(2d / 8) * Math.Cos((2 * n + 1) * (k * Math.PI / (2 * 8)));
+                    var aKN = C.At(k, 0) * Math.Sqrt(2d / 8) * Math.Cos((2 * n + 1) * (k * Math.PI / (2 * 8)));
                     a[k, n] = aKN;
                 }
             }
@@ -100,16 +109,23 @@ namespace JPEG_Encoder
             
             a.Multiply(X).Multiply(aT, X);
             
-            return X.Map(Convert.ToInt32);
+            return X;
         }
 
-        public static Matrix<int> arai(Matrix<double> input)
+        public static Matrix<double> arai(Matrix<double> input)
         {
-            foreach (var row in input)
+            var i = 0;
+            foreach (var row in input.EnumerateRows())
             {
-                araiVector(row);
+                input.SetRow(i++, araiVector(row));
             }
 
+            i = 0;
+            foreach (var column in input.EnumerateColumns())
+            {
+                input.SetColumn(i++, araiVector(column));
+            }
+            
             return input;
         }
 
@@ -251,7 +267,7 @@ namespace JPEG_Encoder
                     {
                         for (var j = 0; j < n; j++)
                         {
-                            xXy += 2d / n * C.At(i, 1) * C.At(j, 1) * Y.At(j, i)
+                            xXy += 2d / n * C.At(i, 0) * C.At(j, 0) * Y.At(j, i)
                                      * Math.Cos((2 * x + 1) * i * Math.PI / (2d * n))
                                      * Math.Cos((2 * y + 1) * j * Math.PI / (2d * n));
                         }

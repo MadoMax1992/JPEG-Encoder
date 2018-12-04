@@ -11,40 +11,40 @@ namespace JPEG_Encoder
             
             DCT.TestDCT();
 
-            const string filename = "../../../img/TestPicture2.ppm";
-
-            var testImage = new Image(filename, 4);
+//            const string filename = "../../../img/TestPicture2.ppm";
+//
+//            var testImage = new Image(filename, 4);
 
 //            Image.WriteJpeg();
 //            
 //            
 //            testImage.ChangeToYCbCr();
 //
-            var array = testImage.TransformMatrixToArray(testImage.R);
-            array = new[] {255, 255, 25, 25, 25, 0, 10, 10, 0, 0, 0, 255, 255};
-
-            var tree = new HuffmanTree();
-
-            tree.Build(array);
-            tree.ShiftMostRightSymbol();
-
-            var encoded = tree.Encode(array);
-
-            Console.WriteLine("Encoded: ");
-
-            for (int i = 0; i < encoded.FullBitLength; i++)
-            {
-                Console.Write(encoded.ReadBit().AsInt() + " ");
-            }
-            encoded.Seek(0,0);
-
-            Console.WriteLine();
-            var decoded = tree.Decode(encoded);
-            Console.WriteLine("Decoded: ");
-            foreach (var i in decoded)
-            {
-                Console.Write(i + " ");
-            }
+//            var array = testImage.TransformMatrixToArray(testImage.R);
+//            array = new[] {255, 255, 25, 25, 25, 0, 10, 10, 0, 0, 0, 255, 255};
+//
+//            var tree = new HuffmanTree();
+//
+//            tree.Build(array);
+//            tree.ShiftMostRightSymbol();
+//
+//            var encoded = tree.Encode(array);
+//
+//            Console.WriteLine("Encoded: ");
+//
+//            for (int i = 0; i < encoded.FullBitLength; i++)
+//            {
+//                Console.Write(encoded.ReadBit().AsInt() + " ");
+//            }
+//            encoded.Seek(0,0);
+//
+//            Console.WriteLine();
+//            var decoded = tree.Decode(encoded);
+//            Console.WriteLine("Decoded: ");
+//            foreach (var i in decoded)
+//            {
+//                Console.Write(i + " ");
+//            }
 
 //            filename = filename.Substring(0, filename.Length - 4);
 //            testImage.WriteImageOnlyFromY(filename);
@@ -87,45 +87,45 @@ namespace JPEG_Encoder
             //            }
         }
 
-        private static void HuffmanTreeTest()
-        {
-            var input = new[]
-            {
-                1, 5, 4, 3, 4, 5, 20, 54, 65, 65, 65, 4, 33, 23, 24, 26, 27, 2, 3, 4, 2, 1, 2, 3, 2, 1, 2, 3, 2, 3, 4,
-                5, 6, 4, 3, 2, 1, 2, 3, 5, 6, 12, 10, 12, 13, 14, 15, 17, 17, 20, 12, 32, 43, 43, 43, 32, 32, 32
-            };
-
-            var huffmanTree = new HuffmanTree();
-
-            huffmanTree.Build(input);
-
-            foreach (var symbol in huffmanTree.Frequencies)
-            {
-                Console.Write(symbol.Key + ": ");
-                Console.WriteLine(symbol.Value);
-            }
-
-            var input2 = new[] {1};
-
-            var encoded = huffmanTree.Encode(input2);
-
-            Console.WriteLine("Encoded: ");
-            for (int i = 0; i < encoded.Length; i++)
-            {
-                Console.Write(encoded.ReadBit().AsInt() + " ");
-            }
-
-            Console.WriteLine();
-
-            var decoded = huffmanTree.Decode(encoded);
-            Console.WriteLine("Decoded: ");
-            foreach (var i in decoded)
-            {
-                Console.Write(i + " ");
-            }
-
-            Console.WriteLine();
-            Console.WriteLine("End");
-        }
+//        private static void HuffmanTreeTest()
+//        {
+//            var input = new[]
+//            {
+//                1, 5, 4, 3, 4, 5, 20, 54, 65, 65, 65, 4, 33, 23, 24, 26, 27, 2, 3, 4, 2, 1, 2, 3, 2, 1, 2, 3, 2, 3, 4,
+//                5, 6, 4, 3, 2, 1, 2, 3, 5, 6, 12, 10, 12, 13, 14, 15, 17, 17, 20, 12, 32, 43, 43, 43, 32, 32, 32
+//            };
+//
+//            var huffmanTree = new HuffmanTree();
+//
+//            huffmanTree.Build(input);
+//
+//            foreach (var symbol in huffmanTree.Frequencies)
+//            {
+//                Console.Write(symbol.Key + ": ");
+//                Console.WriteLine(symbol.Value);
+//            }
+//
+//            var input2 = new[] {1};
+//
+//            var encoded = huffmanTree.Encode(input2);
+//
+//            Console.WriteLine("Encoded: ");
+//            for (int i = 0; i < encoded.Length; i++)
+//            {
+//                Console.Write(encoded.ReadBit().AsInt() + " ");
+//            }
+//
+//            Console.WriteLine();
+//
+//            var decoded = huffmanTree.Decode(encoded);
+//            Console.WriteLine("Decoded: ");
+//            foreach (var i in decoded)
+//            {
+//                Console.Write(i + " ");
+//            }
+//
+//            Console.WriteLine();
+//            Console.WriteLine("End");
+//        }
     }
 }

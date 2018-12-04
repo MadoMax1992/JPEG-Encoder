@@ -58,7 +58,7 @@ namespace JPEG_Encoder
             var secondMostRightNode = current;
             
             // Unshifts a 0 to the inverted Address for the lookup
-            mostRightNode.Depth++;
+//            mostRightNode.Depth++;
             
             // Adjust the tree as we still use it to decode
             var wildcard = new Node();
@@ -77,13 +77,13 @@ namespace JPEG_Encoder
             encodedSource.AutoIncreaseStream = true;
 
 
-            foreach (var symbol in source)
-            {
-                for (int i = 0; i < LookupTable[symbol].Depth; i++)
-                {
-                    encodedSource.WriteBit((LookupTable[symbol].Address >> i) % 2);
-                }
-            }
+//            foreach (var symbol in source)
+//            {
+//                for (int i = 0; i < LookupTable[symbol].Depth; i++)
+//                {
+//                    encodedSource.WriteBit((LookupTable[symbol].Address >> i) % 2);
+//                }
+//            }
 
             encodedSource.Seek(0,0);
             
