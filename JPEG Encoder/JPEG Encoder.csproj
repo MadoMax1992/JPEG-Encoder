@@ -71,7 +71,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BitStreamPP.cs" />
-    <Compile Include="encoding\DCT.cs" />
+    <Compile Include="encoding\dct\Arai.cs" />
+    <Compile Include="encoding\dct\DCT.cs" />
     <Compile Include="encoding\huffman\HuffmanTree.cs" />
     <Compile Include="encoding\huffman\Node.cs" />
     <Compile Include="Image.cs" />

@@ -1,4 +1,5 @@
 using JPEG_Encoder.encoding;
+using JPEG_Encoder.encoding.dct;
 
 namespace JPEG_Encoder
 {
@@ -10,6 +11,8 @@ namespace JPEG_Encoder
             // y&~(1 << 1) 
             
             DCT.TestDCT();
+            
+            Arai.TestArai();
 
 //            const string filename = "../../../img/TestPicture2.ppm";
 //
