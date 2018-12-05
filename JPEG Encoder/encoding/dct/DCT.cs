@@ -35,10 +35,24 @@ namespace JPEG_Encoder.encoding.dct
 
             stopwatch.Restart();
             
+            Console.WriteLine("Inverse Naive:");
+            Console.WriteLine(Invert(naiveDct));
+            Console.Write("Elapsed MilliSeconds: ");
+            Console.WriteLine(stopwatch.ElapsedMilliseconds);
+            
+            stopwatch.Restart();
+            
             X = Matrix<double>.Build.DenseOfArray(array);
             Matrix<double> advancedDct = Advanced(X);
             Console.WriteLine("Advanced DCT:");
             Console.WriteLine(advancedDct);
+            Console.Write("Elapsed MilliSeconds: ");
+            Console.WriteLine(stopwatch.ElapsedMilliseconds);
+            
+            stopwatch.Restart();
+            
+            Console.WriteLine("Inverse Advanced:");
+            Console.WriteLine(Invert(advancedDct));
             Console.Write("Elapsed MilliSeconds: ");
             Console.WriteLine(stopwatch.ElapsedMilliseconds);
             

@@ -54,7 +54,7 @@ namespace JPEG_Encoder.encoding.dct
             };
 
             var stopwatch = Stopwatch.StartNew();
-            stopwatch.Restart();
+            stopwatch.Start();
             
             Matrix<double> X = Matrix<double>.Build.DenseOfArray(array);
             Matrix<double> araiDct = Calc(X);
@@ -62,6 +62,14 @@ namespace JPEG_Encoder.encoding.dct
             Console.WriteLine(araiDct);
             Console.Write("Elapsed MilliSeconds: ");
             Console.WriteLine(stopwatch.ElapsedMilliseconds);
+            
+            Console.WriteLine("Inverse Arai:");
+            Console.WriteLine(CalcReverse(araiDct));
+            Console.Write("Elapsed MilliSeconds: ");
+            Console.WriteLine(stopwatch.ElapsedMilliseconds);
+            
+            stopwatch.Stop();
+            
         }
         
         public static Matrix<double> Calc(Matrix<double> input)
@@ -76,6 +84,23 @@ namespace JPEG_Encoder.encoding.dct
             foreach (Vector<double> column in input.EnumerateColumns())
             {
                 input.SetColumn(i++, AraiVector(column));
+            }
+            
+            return input;
+        }
+        
+        public static Matrix<double> CalcReverse(Matrix<double> input)
+        {
+            int i = 0;
+            foreach (Vector<double> row in input.EnumerateRows())
+            {
+                input.SetRow(i++, ReverseArai(row));
+            }
+
+            i = 0;
+            foreach (Vector<double> column in input.EnumerateColumns())
+            {
+                input.SetColumn(i++, ReverseArai(column));
             }
             
             return input;
