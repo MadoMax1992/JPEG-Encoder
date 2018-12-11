@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -37,6 +38,11 @@ namespace JPEG_Encoder
         {
             BitLength = Convert.ToByte(((BitLength + bits.Count) % 8));
             base.WriteBits(bits);
+        }
+
+        public void WriteMarker(int marker)
+        {
+            WriteByte((byte) marker);
         }
     }
 }

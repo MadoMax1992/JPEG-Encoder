@@ -42,6 +42,18 @@
       <HintPath>..\packages\MathNet.Numerics.4.7.0\lib\net461\MathNet.Numerics.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Solver.Foundation, Version=3.0.2.10889, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <HintPath>..\packages\Microsoft.Solver.Foundation.3.1.0\lib\Microsoft.Solver.Foundation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NMath, Version=6.2.0.44, Culture=neutral, PublicKeyToken=873235918a322639">
+      <HintPath>..\packages\CenterSpace.NMath.6.2.0.44\lib\net40\NMath.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NMathStats, Version=4.2.0.44, Culture=neutral, PublicKeyToken=873235918a322639">
+      <HintPath>..\packages\CenterSpace.NMath.Stats.4.2.0.44\lib\net40\NMathStats.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
@@ -83,9 +95,25 @@
     <Compile Include="encoding\huffman\model\HuffmanTreeOld.cs" />
     <Compile Include="encoding\huffman\model\HuffmanTreeComponent.cs" />
     <Compile Include="encoding\huffman\Node.cs" />
-    <Compile Include="Image.cs" />
+    <Compile Include="ImageOld.cs" />
+    <Compile Include="image\colors\ColorChannel.cs" />
+    <Compile Include="image\colors\ColorChannels.cs" />
+    <Compile Include="image\colors\rgb\RGB.cs" />
+    <Compile Include="image\colors\rgb\RGBImage.cs" />
+    <Compile Include="image\colors\ycbcr\YCbCr.cs" />
+    <Compile Include="image\colors\ycbcr\YCbCrImage.cs" />
+    <Compile Include="image\Image.cs" />
+    <Compile Include="JpegEncoder.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="segments\app0\APP0Writer.cs" />
+    <Compile Include="segments\dht\DHTWriter.cs" />
+    <Compile Include="segments\dht\HuffmanTable.cs" />
+    <Compile Include="segments\eoi\EOIWriter.cs" />
+    <Compile Include="segments\SegmentWriter.cs" />
+    <Compile Include="segments\sof0\SOF0Component.cs" />
+    <Compile Include="segments\sof0\SOF0Writer.cs" />
+    <Compile Include="segments\soi\SOIWriter.cs" />
     <Compile Include="utility.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -103,6 +131,8 @@
     <Error Condition="!Exists('..\packages\xunit.core.2.4.1\build\xunit.core.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\xunit.core.2.4.1\build\xunit.core.props'))" />
     <Error Condition="!Exists('..\packages\xunit.core.2.4.1\build\xunit.core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\xunit.core.2.4.1\build\xunit.core.targets'))" />
     <Error Condition="!Exists('..\packages\xunit.runner.console.2.4.1\build\xunit.runner.console.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\xunit.runner.console.2.4.1\build\xunit.runner.console.props'))" />
+    <Error Condition="!Exists('..\packages\CenterSpace.NMath.6.2.0.44\build\CenterSpace.NMath.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CenterSpace.NMath.6.2.0.44\build\CenterSpace.NMath.targets'))" />
   </Target>
   <Import Project="..\packages\xunit.core.2.4.1\build\xunit.core.targets" Condition="Exists('..\packages\xunit.core.2.4.1\build\xunit.core.targets')" />
+  <Import Project="..\packages\CenterSpace.NMath.6.2.0.44\build\CenterSpace.NMath.targets" Condition="Exists('..\packages\CenterSpace.NMath.6.2.0.44\build\CenterSpace.NMath.targets')" />
 </Project>

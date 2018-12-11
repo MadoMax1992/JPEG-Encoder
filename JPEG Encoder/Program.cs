@@ -1,6 +1,11 @@
+using System;
+using System.IO;
 using JPEG_Encoder.encoding;
 using JPEG_Encoder.encoding.dct;
 using JPEG_Encoder.encoding.huffman;
+using JPEG_Encoder.image.colors;
+using JPEG_Encoder.image.colors.rgb;
+using JPEG_Encoder.image.colors.ycbcr;
 
 namespace JPEG_Encoder
 {
@@ -11,11 +16,17 @@ namespace JPEG_Encoder
             // flip first bit of int
             // y&~(1 << 1) 
             
-             HuffmanTreeTest();
 
-//            const string filename = "../../../img/TestPicture2.ppm";
-//
-//            var testImage = new Image(filename, 4);
+            const string filename = "../../../img/TestPicture2.ppm";
+
+            RGBImage rgbImage = RGBImage.RGBImageBuilder.From(new FileStream(filename, FileMode.Open)).Build();
+
+            Console.WriteLine(rgbImage.ToString());
+            YCbCrImage yCbCrImage = ColorChannels.RGBToYCbCr(rgbImage);
+            
+            Console.WriteLine(yCbCrImage.ToString());
+            
+            
 
 //            Image.WriteJpeg();
 //            

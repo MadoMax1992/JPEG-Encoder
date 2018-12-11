@@ -5,7 +5,7 @@ using MathNet.Numerics.LinearAlgebra;
 
 namespace JPEG_Encoder
 {
-    public class Image
+    public class ImageOld
     {
         private readonly string _magicNumber;
         private readonly int _width;
@@ -20,7 +20,7 @@ namespace JPEG_Encoder
         public Matrix<double> Cr;
 
 
-        public Image(string path, int stride)
+        public ImageOld(string path, int stride)
         {
             var stream = new FileStream(path, FileMode.Open);
 
