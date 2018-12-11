@@ -8,7 +8,8 @@ namespace JPEG_Encoder.image.colors
 {
     public class ColorChannel
     {
-        private DoubleMatrix[] blocks;
+        //TODO set private and change cosineTransformation
+        public DoubleMatrix[] blocks;
         private int height;
         private int width;
         private int widthInBlocks;

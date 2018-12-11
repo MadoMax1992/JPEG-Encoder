@@ -16,16 +16,24 @@ namespace JPEG_Encoder
             // flip first bit of int
             // y&~(1 << 1) 
             
-
+            PerformanceCheck.StartCheck();
             const string filename = "../../../img/TestPicture2.ppm";
 
-            RGBImage rgbImage = RGBImage.RGBImageBuilder.From(new FileStream(filename, FileMode.Open)).Build();
+//            RGBImage rgbImage = RGBImage.RGBImageBuilder.From(new FileStream(filename, FileMode.Open)).Build();
+//           
+//            Console.WriteLine(rgbImage.ToString());
+//            YCbCrImage yCbCrImage = ColorChannels.RGBToYCbCr(rgbImage);
+//            
+//            Console.WriteLine(yCbCrImage.ToString());
 
-            Console.WriteLine(rgbImage.ToString());
-            YCbCrImage yCbCrImage = ColorChannels.RGBToYCbCr(rgbImage);
-            
-            Console.WriteLine(yCbCrImage.ToString());
-            
+//            try
+//            {
+//                JpegEncoder.WithImageFromFile(filename).ConvertToJpeg(1);
+//            }
+//            catch (Exception e)
+//            {
+//                Console.WriteLine(e.ToString());
+//            }
             
 
 //            Image.WriteJpeg();

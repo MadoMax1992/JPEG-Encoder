@@ -135,6 +135,7 @@ namespace JPEG_Encoder.image.colors.rgb
                                 headerItemCount++;
                                 break;
                             case 3: // depth
+                                ReadValue(binReader);
                                 headerItemCount++;
                                 break;
                             default:
@@ -220,7 +221,7 @@ namespace JPEG_Encoder.image.colors.rgb
                 for (int j = 0; j < GetHeight(); j++)
                 {
                     RGB pixel = GetRGBAt(i, j);
-                    sb.Append(pixel.ToString()).Append(" ");
+                    sb.Append(pixel).Append(" ");
                 }
 
                 sb.Append("\n");

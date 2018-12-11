@@ -132,7 +132,7 @@ namespace JPEG_Encoder.encoding.dct
             return X;
         }
 
-        private static Matrix<double> Invert(Matrix<double> Y)
+        public static Matrix<double> Invert(Matrix<double> Y)
         {
             var n = Y.RowCount;
             var X = Matrix<double>.Build.Dense(n, n);

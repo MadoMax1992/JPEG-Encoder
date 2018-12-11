@@ -51,8 +51,7 @@ namespace JPEG_Encoder.image.colors
             DoubleVector offsetMatrix = new DoubleVector(new double[]{128, 128, 128});
             
             DoubleVector rgbMatrix = new DoubleVector(pixel.GetAsArray());
-            DoubleVector hilfsVector = NMathFunctions.Product(conversionMatrix, rgbMatrix);
-            DoubleVector yCbCrMatrix = DoubleVector.Add(hilfsVector, prefixMatrix);
+            DoubleVector yCbCrMatrix = DoubleVector.Add(NMathFunctions.Product(conversionMatrix, rgbMatrix), prefixMatrix);
             DoubleVector resultMatrix = DoubleVector.Subtract(yCbCrMatrix, offsetMatrix);
             return new YCbCr((int) Math.Round(resultMatrix[0]),
                 (int) Math.Round(resultMatrix[1]),

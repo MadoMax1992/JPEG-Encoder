@@ -84,7 +84,12 @@
   <ItemGroup>
     <Compile Include="BitStreamPP.cs" />
     <Compile Include="encoding\dct\Arai.cs" />
+    <Compile Include="encoding\dct\CosineTransformation.cs" />
     <Compile Include="encoding\dct\DCT.cs" />
+    <Compile Include="encoding\dct\FullImageAraiTask.cs" />
+    <Compile Include="encoding\dct\FullImageDirectTask.cs" />
+    <Compile Include="encoding\dct\FullImageSeparatedTask.cs" />
+    <Compile Include="encoding\dct\PerformanceCheck.cs" />
     <Compile Include="encoding\huffman\CodeWord.cs" />
     <Compile Include="encoding\huffman\HuffmanEncoder.cs" />
     <Compile Include="encoding\huffman\model\DepthComparator.cs" />
