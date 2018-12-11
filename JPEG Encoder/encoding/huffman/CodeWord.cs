@@ -30,7 +30,7 @@ namespace JPEG_Encoder.encoding.huffman
             return length;
         }
 
-        public string ToString()
+        public override string ToString()
         {
             string result = symbol + ": ";
             for (int i = length; i > 0; i--)

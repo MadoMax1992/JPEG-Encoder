@@ -89,7 +89,6 @@ namespace JPEG_Encoder.encoding.dct
             Console.WriteLine("Arai takes " + (double) finishedAfter / count + " ms/image");
             Console.WriteLine("Managed " + count + " images");
             stopwatch.Stop();
-            Environment.Exit(0);
         }
     }
 }

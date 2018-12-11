@@ -70,6 +70,7 @@ namespace JPEG_Encoder.image.colors.rgb
                 }
                 catch (IOException e)
                 {
+                    Console.WriteLine(e);
                 }
 
 

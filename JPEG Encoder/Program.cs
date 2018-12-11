@@ -1,11 +1,7 @@
 using System;
-using System.IO;
-using JPEG_Encoder.encoding;
+using System.Runtime.Remoting.Contexts;
 using JPEG_Encoder.encoding.dct;
 using JPEG_Encoder.encoding.huffman;
-using JPEG_Encoder.image.colors;
-using JPEG_Encoder.image.colors.rgb;
-using JPEG_Encoder.image.colors.ycbcr;
 
 namespace JPEG_Encoder
 {
@@ -17,7 +13,7 @@ namespace JPEG_Encoder
             // y&~(1 << 1) 
             
             PerformanceCheck.StartCheck();
-            const string filename = "../../../img/TestPicture2.ppm";
+//            const string filename = "../../../img/TestPicture2.ppm";
 
 //            RGBImage rgbImage = RGBImage.RGBImageBuilder.From(new FileStream(filename, FileMode.Open)).Build();
 //           

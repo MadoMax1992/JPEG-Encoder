@@ -12,12 +12,12 @@ namespace JPEG_Encoder.image.colors.ycbcr
             this.originalHeight = originalHeight;
         }
 
-        public int GetHeight()
+        public new int GetHeight()
         {
             return GetChannel1().GetHeight();
         }
 
-        public int GetWidth()
+        public new int GetWidth()
         {
             return GetChannel1().GetWidth();
         }

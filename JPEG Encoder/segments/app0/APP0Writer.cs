@@ -20,7 +20,7 @@ namespace JPEG_Encoder.segments.app0
         private int yThumb = 0;
         private List<byte> thumbnail = new List<byte>();
 
-        public APP0Writer(BitStreamPP bitStream, int xDensity, int yDensity) : base(bitStream)
+        public APP0Writer(BitStreamPP bitStream, int xDensity, int yDensity, int yDensityLow) : base(bitStream)
         {
             SetXDensity(xDensity);
             SetYDensity(yDensity);
@@ -43,8 +43,8 @@ namespace JPEG_Encoder.segments.app0
         {
             if (yDensity > 0 && yDensity <= 0xFFFF)
             {
-                xDensityHigh = (yDensity & 0xFF00) >> 8;
-                xDensityLow = yDensity & 0xFF;
+                yDensityHigh = (yDensity & 0xFF00) >> 8;
+                yDensityLow = yDensity & 0xFF;
             }
             else
             {
