@@ -73,7 +73,15 @@
     <Compile Include="BitStreamPP.cs" />
     <Compile Include="encoding\dct\Arai.cs" />
     <Compile Include="encoding\dct\DCT.cs" />
-    <Compile Include="encoding\huffman\HuffmanTree.cs" />
+    <Compile Include="encoding\huffman\CodeWord.cs" />
+    <Compile Include="encoding\huffman\HuffmanEncoder.cs" />
+    <Compile Include="encoding\huffman\model\DepthComparator.cs" />
+    <Compile Include="encoding\huffman\model\HuffmanTree.cs" />
+    <Compile Include="encoding\huffman\model\HuffmanTreeLeaf.cs" />
+    <Compile Include="encoding\huffman\model\HuffmanTreeNode.cs" />
+    <Compile Include="encoding\huffman\model\HuffmanTreeNullLeaf.cs" />
+    <Compile Include="encoding\huffman\model\HuffmanTreeOld.cs" />
+    <Compile Include="encoding\huffman\model\HuffmanTreeComponent.cs" />
     <Compile Include="encoding\huffman\Node.cs" />
     <Compile Include="Image.cs" />
     <Compile Include="Program.cs" />

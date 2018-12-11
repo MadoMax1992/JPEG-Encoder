@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace JPEG_Encoder.encoding.huffman
+namespace JPEG_Encoder.encoding.huffman.model
 {
-    public class HuffmanTree
+    public class HuffmanTreeOld
     {
         public Node Root = new Node();
         public readonly BitStreamPP[] LookupTable;
