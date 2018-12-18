@@ -53,7 +53,7 @@ namespace JPEG_Encoder
         {
             for (int i = 0; i < channel.GetNumOfBlocks(); i++)
             {
-                channel.blocks[i] = CosineTransformation.arai(channel.GetBlock(i));
+                Arai.Calc(channel.GetBlock(i));
             }
         }
         

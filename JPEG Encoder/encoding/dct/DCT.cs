@@ -1,16 +1,36 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
+using CenterSpace.NMath.Core;
 using MathNet.Numerics.LinearAlgebra;
 
 namespace JPEG_Encoder.encoding.dct
 {
     public static class DCT
     {
-        private static readonly Matrix<double> C = Matrix<double>.Build.DenseOfArray(new[,]{
-                                                                                    {
-                                                                                        1d / Math.Sqrt(2), 1, 1, 1, 1, 1, 1, 1
-                                                                                    }});
+        private static readonly DoubleMatrix C = new DoubleMatrix(new[,]
+                                                                    {{
+                                                                        1d / Math.Sqrt(2), 1, 1, 1, 1, 1, 1, 1
+                                                                    }});
 
+        private static readonly DoubleMatrix A;
+
+        private static readonly DoubleMatrix A_T;
+
+        static DCT()
+        {
+            A = new DoubleMatrix(new double[8,8]);
+            for (int n = 0; n < 8; n++)
+            {
+                for (int k = 0; k < 8; k++)
+                {
+                    double a_k_n = C.ElementAt(k) * Math.Sqrt(2d / 8) * Math.Cos((2 * n + 1) * (k * Math.PI / (2 * 8)));
+                    A[k, n] = a_k_n;
+                }
+            }
+
+            A_T = A.Transpose();
+        }
         public static void TestDCT()
         {
             double[,] array = {
@@ -26,8 +46,8 @@ namespace JPEG_Encoder.encoding.dct
 
             var stopwatch = Stopwatch.StartNew();
             stopwatch.Start();
-            Matrix<double> X = Matrix<double>.Build.DenseOfArray(array);
-            Matrix<double> naiveDct = Naive(X);
+            DoubleMatrix X = new DoubleMatrix(array);
+            DoubleMatrix naiveDct = Naive(X);
             Console.WriteLine("Naive DCT:");
             Console.WriteLine(naiveDct);
             Console.Write("Elapsed MilliSeconds: ");
@@ -42,8 +62,8 @@ namespace JPEG_Encoder.encoding.dct
             
             stopwatch.Restart();
             
-            X = Matrix<double>.Build.DenseOfArray(array);
-            Matrix<double> advancedDct = Advanced(X);
+            X = new DoubleMatrix(array);
+            DoubleMatrix advancedDct = Advanced(X);
             Console.WriteLine("Advanced DCT:");
             Console.WriteLine(advancedDct);
             Console.Write("Elapsed MilliSeconds: ");
@@ -59,83 +79,42 @@ namespace JPEG_Encoder.encoding.dct
             stopwatch.Stop();
         }
 
-        public static Matrix<double> Naive(Matrix<double> input)
+        public static DoubleMatrix Naive(DoubleMatrix input)
         {
-            //Blocksize N in Formel
-            const int blockSize = 8;
-            Matrix<double> result = Matrix<double>.Build.Dense(input.RowCount, input.ColumnCount);
-            //Zweiter Teil der Formel
-
-            for (int i = 0; i < blockSize; i++)
+            int n = input.Rows;
+            DoubleMatrix Y = new DoubleMatrix(n, n);
+            for (int j = 0; j < n; j++)
             {
-                for (int j = 0; j < blockSize; j++)
+                for (int i = 0; i < n; i++)
                 {
-                    double secondPart = 0;
-
-                    for (int x = 0; x < input.RowCount; x++)
+                    double temp = 0;
+                    for (int x = 0; x < n; x++)
                     {
-
-                        for (int y = 0; y < input.ColumnCount; y++)
+                        for (int y = 0; y < n; y++)
                         {
-                            secondPart += input.At(x, y) * CosOperation(x,i) * CosOperation(y, j);
+                            temp += input[y, x]
+                                    * Math.Cos((2 * x + 1) * i * Math.PI / (2d * n))
+                                    * Math.Cos((2 * y + 1) * j * Math.PI / (2d * n));
                         }
                     }
-                    result[i, j] = FirstPart(i, j) * secondPart;
+
+                    double Y_i_j = 2d / n * C.ElementAt(i) * C.ElementAt(j) * temp;
+                    Y[j, i] = Y_i_j;
                 }
             }
-            return result;
-            
-            double FirstPart(int i, int j)
-            {
-                double firstC;
-                double secondC;
-                if (i == 0)
-                {
-                    firstC = 1.0 / Math.Sqrt(2);
-                }
-                else
-                {
-                    firstC = 1.0;
-                }
-                if (j == 0)
-                {
-                    secondC = 1.0 / Math.Sqrt(2);
-                }
-                else
-                {
-                    secondC = 1.0;
-                }
-                return 2.0 / blockSize * firstC * secondC;
-            }
-            double CosOperation(int inputIndex, int transformIndex)
-            {
-                return Math.Cos((2.0 * inputIndex + 1.0) * transformIndex * Math.PI / (2.0 * blockSize));
-            }
+
+            return Y; 
         }
 
-        public static Matrix<double> Advanced(Matrix<double> X)
+        public static DoubleMatrix Advanced(DoubleMatrix x)
         {
-            Matrix<double> a = Matrix<double>.Build.Dense(8, 8);
-            
-            for (int n = 0; n < 8; n++)
-            {
-                for (int k = 0; k < 8; k++)
-                {
-                    double aKN = C.At(k, 0) * Math.Sqrt(2d / 8) * Math.Cos((2 * n + 1) * (k * Math.PI / (2 * 8)));
-                    a[k, n] = aKN;
-                }
-            }
-            Matrix<double> aT = a.Transpose();
-            
-            a.Multiply(X).Multiply(aT, X);
-            
-            return X;
+            return NMathFunctions.Product(NMathFunctions.Product(A, x), A_T);
         }
 
-        public static Matrix<double> Invert(Matrix<double> Y)
+        public static DoubleMatrix Invert(DoubleMatrix Y)
         {
-            var n = Y.RowCount;
-            var X = Matrix<double>.Build.Dense(n, n);
+            var n = Y.Rows;
+            var X = new DoubleMatrix(n, n);
             for (var y = 0; y < n; y++)
             {
                 for (var x = 0; x < n; x++)
@@ -145,7 +124,7 @@ namespace JPEG_Encoder.encoding.dct
                     {
                         for (var j = 0; j < n; j++)
                         {
-                            xXy += 2d / n * C.At(i, 0) * C.At(j, 0) * Y.At(j, i)
+                            xXy += 2d / n * C.ElementAt(i) * C.ElementAt(j) * Y[j, i]
                                      * Math.Cos((2 * x + 1) * i * Math.PI / (2d * n))
                                      * Math.Cos((2 * y + 1) * j * Math.PI / (2d * n));
                         }

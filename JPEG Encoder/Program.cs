@@ -13,6 +13,8 @@ namespace JPEG_Encoder
             // y&~(1 << 1) 
             
             PerformanceCheck.StartCheck();
+            
+//            Arai.TestArai();
 //            const string filename = "../../../img/TestPicture2.ppm";
 
 //            RGBImage rgbImage = RGBImage.RGBImageBuilder.From(new FileStream(filename, FileMode.Open)).Build();

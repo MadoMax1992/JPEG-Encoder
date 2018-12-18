@@ -21,7 +21,7 @@ namespace JPEG_Encoder.encoding.dct
             {
                 foreach (DoubleMatrix block in channel.GetBlocks(0, channel.GetNumOfBlocks()))
                 {
-                    CosineTransformation.direct(block);
+                    DCT.Naive(block);
                 }
 
                 count++;

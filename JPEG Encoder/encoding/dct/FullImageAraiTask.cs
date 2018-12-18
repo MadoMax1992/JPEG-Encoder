@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using CenterSpace.NMath.Core;
 using JPEG_Encoder.image.colors;
@@ -21,7 +22,7 @@ namespace JPEG_Encoder.encoding.dct
             {
                 foreach (DoubleMatrix block in channel.GetBlocks(0, channel.GetNumOfBlocks()))
                 {
-                    CosineTransformation.arai(block);
+                    Arai.Calc(block);
                 }
 
                 count++;

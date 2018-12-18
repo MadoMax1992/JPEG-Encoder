@@ -1,10 +1,5 @@
 using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
-using CenterSpace.NMath.Core;
 using JPEG_Encoder.image.colors;
 
 namespace JPEG_Encoder.encoding.dct
@@ -28,29 +23,6 @@ namespace JPEG_Encoder.encoding.dct
                     value = (x + (y * 8)) % 256;
                     picture.SetPixel(x, y, value);
                 }
-            }
-        }
-
-        public List<DoubleMatrix> GetBlockAsList(int start, int end)
-        {
-            return picture.GetBlocks(start, end);
-        }
-
-        public int GetNumOfBlocks()
-        {
-            return picture.GetNumOfBlocks();
-        }
-
-        public void print()
-        {
-            for (int row = 0; row < picture.GetHeight(); row++)
-            {
-                for (int col = 0; col < picture.GetWidth(); col++)
-                {
-                    Console.WriteLine(picture.GetPixel(row, col) + " ");
-                }
-
-                Console.WriteLine();
             }
         }
 

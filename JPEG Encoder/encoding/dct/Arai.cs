@@ -1,5 +1,8 @@
 using System;
 using System.Diagnostics;
+using System.IO;
+using System.Runtime.CompilerServices;
+using CenterSpace.NMath.Core;
 using MathNet.Numerics.LinearAlgebra;
 
 namespace JPEG_Encoder.encoding.dct
@@ -55,16 +58,17 @@ namespace JPEG_Encoder.encoding.dct
 
             var stopwatch = Stopwatch.StartNew();
             stopwatch.Start();
-            
-            Matrix<double> X = Matrix<double>.Build.DenseOfArray(array);
-            Matrix<double> araiDct = Calc(X);
+
+            DoubleMatrix X = new DoubleMatrix(array);         
+            Calc(X);
             Console.WriteLine("Arai DCT:");
-            Console.WriteLine(araiDct);
+            Console.WriteLine(X);
             Console.Write("Elapsed MilliSeconds: ");
             Console.WriteLine(stopwatch.ElapsedMilliseconds);
             
             Console.WriteLine("Inverse Arai:");
-            Console.WriteLine(CalcReverse(araiDct));
+            CalcReverse(X);
+            Console.WriteLine(X);
             Console.Write("Elapsed MilliSeconds: ");
             Console.WriteLine(stopwatch.ElapsedMilliseconds);
             
@@ -72,41 +76,33 @@ namespace JPEG_Encoder.encoding.dct
             
         }
         
-        public static Matrix<double> Calc(Matrix<double> input)
+        public static void Calc(DoubleMatrix input)
         {
-            int i = 0;
-            foreach (Vector<double> row in input.EnumerateRows())
+            for (int i = 0; i < 8; i++)
             {
-                input.SetRow(i++, AraiVector(row));
+                AraiVector(input.Row(i));
+                
             }
-
-            i = 0;
-            foreach (Vector<double> column in input.EnumerateColumns())
+            for (int i = 0; i < 8; i++)
             {
-                input.SetColumn(i++, AraiVector(column));
+                AraiVector(input.Col(i));
             }
-            
-            return input;
         }
         
-        public static Matrix<double> CalcReverse(Matrix<double> input)
+        public static void CalcReverse(DoubleMatrix input)
         {
-            int i = 0;
-            foreach (Vector<double> row in input.EnumerateRows())
+            for (int i = 0; i < 8; i++)
             {
-                input.SetRow(i++, ReverseArai(row));
+                ReverseArai(input.Row(i));
             }
 
-            i = 0;
-            foreach (Vector<double> column in input.EnumerateColumns())
+            for (int i = 0; i < 8; i++)
             {
-                input.SetColumn(i++, ReverseArai(column));
+                ReverseArai(input.Col(i));
             }
-            
-            return input;
         }
 
-        private static Vector<double> AraiVector(Vector<double> vector)
+        private static void AraiVector(DoubleVector vector)
         {
             /*
              * Based upon
@@ -151,11 +147,9 @@ namespace JPEG_Encoder.encoding.dct
             vector[5] = S[5] * (v19 + v24);
             vector[6] = S[6] * (v11 - v17);
             vector[7] = S[7] * (v23 - v20);
-
-            return vector;
         }
 
-        public static Vector<double> ReverseArai(Vector<double> vector)
+        public static void ReverseArai(DoubleVector vector)
         {
             double v15 = vector[0] / S[0];
             double v26 = vector[1] / S[1];
@@ -201,8 +195,6 @@ namespace JPEG_Encoder.encoding.dct
             vector[5] = (v2 - v5) / 2;
             vector[6] = (v1 - v6) / 2;
             vector[7] = (v0 - v7) / 2;
-
-            return vector;
         }
     }
 }
