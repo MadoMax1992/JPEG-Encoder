@@ -11,7 +11,7 @@ namespace JPEG_Encoder.encoding.dct
 {
     public class PerformanceCheck
     {
-        private ColorChannel picture = new ColorChannel(256, 256);
+        private ColorChannel picture = new ColorChannel(3840, 2160);
 
         public PerformanceCheck()
         {
@@ -25,8 +25,8 @@ namespace JPEG_Encoder.encoding.dct
                 for (int x = 0; x < picture.GetWidth(); x++)
                 {
                     int value;
-                    value = (x + (y * 8)) % picture.GetHeight();
-                    picture.SetPixel(y, x, value);
+                    value = (x + (y * 8)) % 256;
+                    picture.SetPixel(x, y, value);
                 }
             }
         }
