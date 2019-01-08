@@ -5,9 +5,9 @@ namespace JPEG_Encoder.segments
 {
     public abstract class SegmentWriter
     {
-        protected BitStreamPP _bitStream;
+        protected BitStream _bitStream;
 
-        protected SegmentWriter(BitStreamPP bitStream)
+        protected SegmentWriter(BitStream bitStream)
         {
             _bitStream = bitStream;
         }

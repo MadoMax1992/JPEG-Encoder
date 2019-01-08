@@ -1,3 +1,5 @@
+using BitStreams;
+
 namespace JPEG_Encoder.segments.sof0
 {
     public class SOF0Component
@@ -16,12 +18,14 @@ namespace JPEG_Encoder.segments.sof0
             _quantizationTableId = quantizationTableId;
         }
 
-        public void writeToStream(BitStreamPP os)
+        public void WriteToStream(BitStream os)
         {
-            os.WriteInt32(_id);
-            os.WriteInt32(_subSamplingFactorHorizontal);
-            os.WriteInt32(_subSamplingFactorVertical);
-            os.WriteInt32(_quantizationTableId);
+            os.WriteByte((byte) _id);
+            int subSamplingFactor = 0;
+            subSamplingFactor |= _subSamplingFactorHorizontal << 5;
+            subSamplingFactor |= _subSamplingFactorVertical << 0;
+            os.WriteByte((byte) subSamplingFactor);
+            os.WriteByte((byte) _quantizationTableId);
     }
     }
 }

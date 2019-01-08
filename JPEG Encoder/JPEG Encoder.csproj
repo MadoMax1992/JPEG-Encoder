@@ -83,6 +83,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BitStreamPP.cs" />
+    <Compile Include="encoding\acdc\AbstractCategoryEncodedPair.cs" />
+    <Compile Include="encoding\acdc\ACCategoryEncodedPair.cs" />
+    <Compile Include="encoding\acdc\AcDcEncoder.cs" />
+    <Compile Include="encoding\acdc\ACRunlengthEncodedPair.cs" />
+    <Compile Include="encoding\acdc\DCCategoryEncodedPair.cs" />
     <Compile Include="encoding\dct\Arai.cs" />
     <Compile Include="encoding\dct\CosineTransformation.cs" />
     <Compile Include="encoding\dct\DCT.cs" />
@@ -100,6 +105,7 @@
     <Compile Include="encoding\huffman\model\HuffmanTreeOld.cs" />
     <Compile Include="encoding\huffman\model\HuffmanTreeComponent.cs" />
     <Compile Include="encoding\huffman\Node.cs" />
+    <Compile Include="encoding\Util.cs" />
     <Compile Include="ImageOld.cs" />
     <Compile Include="image\colors\ColorChannel.cs" />
     <Compile Include="image\colors\ColorChannels.cs" />
@@ -114,6 +120,8 @@
     <Compile Include="segments\app0\APP0Writer.cs" />
     <Compile Include="segments\dht\DHTWriter.cs" />
     <Compile Include="segments\dht\HuffmanTable.cs" />
+    <Compile Include="segments\dqt\DQTWriter.cs" />
+    <Compile Include="segments\dqt\QuantizationTable.cs" />
     <Compile Include="segments\eoi\EOIWriter.cs" />
     <Compile Include="segments\SegmentWriter.cs" />
     <Compile Include="segments\sof0\SOF0Component.cs" />

@@ -1,37 +1,34 @@
 using System;
 using System.Collections.Generic;
+using BitStreams;
 
 namespace JPEG_Encoder.segments.app0
 {
     public class APP0Writer : SegmentWriter
     {
-        private const int APP0MARKER = 0xFFE0;
-        private int[] JFIF_STRING = {0x4A, 0x46, 0x49, 0x00};
+        private const ushort APP0MARKER = 0xE0FF;
+        private byte[] JFIF_STRING = {0x4A, 0x46, 0x49, 0x46, 0x00};
 
         private int length = 16;
-        private int major = 1;
-        private int minor = 1;
-        private int pixelUnit = 0;
-        private int xDensityLow;
-        private int xDensityHigh;
-        private int yDensityLow;
-        private int yDensityHigh;
-        private int xThumb = 0;
-        private int yThumb = 0;
+        private byte major = 0x01;
+        private byte minor = 0x01;
+        private byte pixelUnit = 0;
+        private byte xDensity;
+        private byte yDensity;
+        private byte xThumb = 0;
+        private byte yThumb = 0;
         private List<byte> thumbnail = new List<byte>();
 
-        public APP0Writer(BitStreamPP bitStream, int xDensity, int yDensity, int yDensityLow) : base(bitStream)
+        public APP0Writer(BitStream bitStream, byte xDensity, byte yDensity) : base(bitStream)
         {
-            SetXDensity(xDensity);
-            SetYDensity(yDensity);
+            this.xDensity = xDensity;
+            this.yDensity = yDensity;
         }
 
-        private void SetXDensity(int xDensity)
+        private void SetXDensity(byte xDensity)
         {
             if (xDensity > 0 && xDensity <= 0xFFFF)
             {
-                xDensityHigh = (xDensity & 0xFF00) >> 8;
-                xDensityLow = xDensity & 0xFF;
             }
             else
             {
@@ -39,12 +36,10 @@ namespace JPEG_Encoder.segments.app0
             }
         }
 
-        private void SetYDensity(int yDensity)
+        private void SetYDensity(byte yDensity)
         {
             if (yDensity > 0 && yDensity <= 0xFFFF)
             {
-                yDensityHigh = (yDensity & 0xFF00) >> 8;
-                yDensityLow = yDensity & 0xFF;
             }
             else
             {
@@ -54,22 +49,19 @@ namespace JPEG_Encoder.segments.app0
 
         public override void WriteSegment()
         {
-            _bitStream.WriteMarker(APP0MARKER);
-            _bitStream.WriteInt32((length & 0xFF00) >> 8);
-            _bitStream.WriteInt32(length & 0xFF);
-            foreach (int t in JFIF_STRING)
-            {
-                _bitStream.WriteInt32(t);
-            }
-            _bitStream.WriteInt32(major);
-            _bitStream.WriteInt32(minor);
-            _bitStream.WriteInt32(pixelUnit);
-            _bitStream.WriteInt32(xDensityHigh);
-            _bitStream.WriteInt32(xDensityLow);
-            _bitStream.WriteInt32(yDensityHigh);
-            _bitStream.WriteInt32(yDensityLow);
-            _bitStream.WriteInt32(xThumb);
-            _bitStream.WriteInt32(yThumb);
+            _bitStream.WriteUInt16(APP0MARKER); 
+            _bitStream.WriteByte(0x00);
+            _bitStream.WriteByte(0x10);
+            _bitStream.WriteBytes(JFIF_STRING, 40L, false);
+            _bitStream.WriteByte(major);
+            _bitStream.WriteByte(minor);
+            _bitStream.WriteByte(pixelUnit);
+            _bitStream.WriteByte(0x00);
+            _bitStream.WriteByte(xDensity);
+            _bitStream.WriteByte(0x00);
+            _bitStream.WriteByte(yDensity);
+            _bitStream.WriteByte(xThumb);
+            _bitStream.WriteByte(yThumb);
             foreach (byte thumbnailByte in thumbnail)
             {
                 _bitStream.WriteByte(thumbnailByte);

@@ -26,9 +26,9 @@ namespace JPEG_Encoder.encoding.dct
             return DCT.Invert(y);
         }
 
-//        public static void quantize(DoubleMatrix transformedMatrix, DoubleMatrix quantizationMatrix)
-//        {
-//            transformedMatrix.divi(quantizationMatrix, transformedMatrix);
-//        }
+        public static void Quantize(DoubleMatrix transformedMatrix, DoubleMatrix quantizationMatrix)
+        {
+            DoubleMatrix.Divide(transformedMatrix, quantizationMatrix, transformedMatrix);
+        }
     }
 }

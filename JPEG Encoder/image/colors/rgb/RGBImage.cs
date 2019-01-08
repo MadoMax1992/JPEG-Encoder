@@ -10,11 +10,11 @@ namespace JPEG_Encoder.image.colors.rgb
         internal class RGBImageBuilder
         {
             private int stride = 16;
-            private int imageWidth;
-            private int imageHeight;
-            ColorChannel red;
-            ColorChannel green;
-            ColorChannel blue;
+            private int _imageWidth;
+            private int _imageHeight;
+            ColorChannel _red;
+            ColorChannel _green;
+            ColorChannel _blue;
 
             public static RGBImageBuilder From(Stream inputStream)
             {
@@ -28,18 +28,18 @@ namespace JPEG_Encoder.image.colors.rgb
 
             private RGBImageBuilder(ColorChannel red, ColorChannel green, ColorChannel blue)
             {
-                imageWidth = red.GetWidth();
-                this.imageHeight = red.GetHeight();
-                this.red = new ColorChannel(GetRealWidth(), GetRealHeight());
-                this.green = new ColorChannel(GetRealWidth(), GetRealHeight());
-                this.blue = new ColorChannel(GetRealWidth(), GetRealHeight());
+                _imageWidth = red.GetWidth();
+                _imageHeight = red.GetHeight();
+                _red = new ColorChannel(GetRealWidth(), GetRealHeight());
+                _green = new ColorChannel(GetRealWidth(), GetRealHeight());
+                _blue = new ColorChannel(GetRealWidth(), GetRealHeight());
                 for (int i = 0; i < red.GetHeight(); i++)
                 {
                     for (int j = 0; j < red.GetWidth(); j++)
                     {
-                        this.red.SetPixel(j, i, red.GetPixel(j, i));
-                        this.green.SetPixel(j, i, red.GetPixel(j, i));
-                        this.blue.SetPixel(j, i, red.GetPixel(j, i));
+                        this._red.SetPixel(j, i, red.GetPixel(j, i));
+                        this._green.SetPixel(j, i, red.GetPixel(j, i));
+                        this._blue.SetPixel(j, i, red.GetPixel(j, i));
                     }
                 }
             }
@@ -57,11 +57,11 @@ namespace JPEG_Encoder.image.colors.rgb
                     int y = 0;
                     while (binReader.PeekChar() >= 0)
                     {
-                        red.SetPixel(x, y, ReadValue(binReader));
-                        green.SetPixel(x, y, ReadValue(binReader));
-                        blue.SetPixel(x, y, ReadValue(binReader));
+                        _red.SetPixel(x, y, ReadValue(binReader));
+                        _green.SetPixel(x, y, ReadValue(binReader));
+                        _blue.SetPixel(x, y, ReadValue(binReader));
                         x++;
-                        if (x % imageWidth == 0)
+                        if (x % _imageWidth == 0)
                         {
                             x = 0;
                             y++;
@@ -96,9 +96,9 @@ namespace JPEG_Encoder.image.colors.rgb
 
             private void InitPicture()
             {
-                red = new ColorChannel(GetRealWidth(), GetRealHeight());
-                green = new ColorChannel(GetRealWidth(), GetRealHeight());
-                blue = new ColorChannel(GetRealWidth(), GetRealHeight());
+                _red = new ColorChannel(GetRealWidth(), GetRealHeight());
+                _green = new ColorChannel(GetRealWidth(), GetRealHeight());
+                _blue = new ColorChannel(GetRealWidth(), GetRealHeight());
             }
 
             private void ExtractMetaInformation(BinaryReader binReader)
@@ -128,11 +128,11 @@ namespace JPEG_Encoder.image.colors.rgb
                                 headerItemCount++;
                                 break;
                             case 1: // width
-                                imageWidth = ReadValue(binReader);
+                                _imageWidth = ReadValue(binReader);
                                 headerItemCount++;
                                 break;
                             case 2: // height
-                                imageHeight = ReadValue(binReader);
+                                _imageHeight = ReadValue(binReader);
                                 headerItemCount++;
                                 break;
                             case 3: // depth
@@ -146,23 +146,12 @@ namespace JPEG_Encoder.image.colors.rgb
                 }
             }
 
-            private string ReadLine(StreamReader sc)
-            {
-                String result = sc.ReadLine();
-                if (result.Contains("#"))
-                {
-                    return ReadLine(sc);
-                }
-
-                return result;
-            }
-
             private int GetRealHeight()
             {
-                int result = imageHeight;
-                if (imageHeight % stride != 0)
+                int result = _imageHeight;
+                if (_imageHeight % stride != 0)
                 {
-                    result = (int) Math.Ceiling((double) imageHeight / stride) * stride;
+                    result = (int) Math.Ceiling((double) _imageHeight / stride) * stride;
                 }
 
                 return result;
@@ -170,10 +159,10 @@ namespace JPEG_Encoder.image.colors.rgb
 
             private int GetRealWidth()
             {
-                int result = imageWidth;
-                if (imageWidth % stride != 0)
+                int result = _imageWidth;
+                if (_imageWidth % stride != 0)
                 {
-                    result = (int) Math.Ceiling((double) imageWidth / stride) * stride;
+                    result = (int) Math.Ceiling((double) _imageWidth / stride) * stride;
                 }
 
                 return result;
@@ -181,7 +170,7 @@ namespace JPEG_Encoder.image.colors.rgb
 
             public RGBImage Build()
             {
-                return new RGBImage(red, green, blue, imageWidth, imageHeight);
+                return new RGBImage(_red, _green, _blue, _imageWidth, _imageHeight);
             }
         }
 

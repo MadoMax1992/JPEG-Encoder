@@ -1,17 +1,19 @@
+using BitStreams;
+
 namespace JPEG_Encoder.segments.eoi
 {
     public class EOIWriter : SegmentWriter
     {
-        private const int EOI_MARKER = 0xFFD9;
+        private const ushort EOI_MARKER = 0xD9FF;
 
-        public EOIWriter(BitStreamPP bitStream) : base(bitStream)
+        public EOIWriter(BitStream bitStream) : base(bitStream)
         {
             
         }
 
         public override void WriteSegment()
         {
-            _bitStream.WriteMarker(EOI_MARKER);
+            _bitStream.WriteUInt16(EOI_MARKER);
         }
     }
 }

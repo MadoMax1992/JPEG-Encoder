@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using BitStreams;
 using JPEG_Encoder.encoding.huffman;
 
 namespace JPEG_Encoder.segments.dht
@@ -38,18 +39,19 @@ namespace JPEG_Encoder.segments.dht
             return codeBook.Count;
         }
 
-        public void write(BitStreamPP bitStream)
+        public void Write(BitStream bos)
         {
-            bitStream.WriteInt32((tableClass << 4) + id);
+            bos.WriteByte((byte) (tableClass << 4 | id << 0));
+
             for (int i = 1; i <= 16; i++)
             {
-                bitStream.WriteInt32(codeWordLengthDictionary[i]);
+                bos.WriteByte((byte) codeWordLengthDictionary[i]);
             }
 
-            for (int i = 1; i < codeBook.Count; i++)
+            for (int i = 0; i < codeBook.Count; i++)
             {
                 CodeWord codeWord = codeBook[i];
-                bitStream.WriteInt32(codeWord.GetSymbol());
+                bos.WriteByte((byte) codeWord.GetSymbol());
             }
         }
     }

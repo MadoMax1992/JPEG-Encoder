@@ -12,8 +12,10 @@ namespace JPEG_Encoder
             // flip first bit of int
             // y&~(1 << 1) 
             
-            PerformanceCheck.StartCheck();
-            
+            //PerformanceCheck.StartCheck();
+
+            JpegEncoder.WithImageFromFile("../../../img/TestPicture2.ppm").ConvertToJpeg(1).WriteImageToDisk();
+
 //            Arai.TestArai();
 //            const string filename = "../../../img/TestPicture2.ppm";
 
@@ -32,7 +34,7 @@ namespace JPEG_Encoder
 //            {
 //                Console.WriteLine(e.ToString());
 //            }
-            
+
 
 //            Image.WriteJpeg();
 //            

@@ -1,34 +1,35 @@
 using System.Collections.Generic;
 using System.Linq;
+using BitStreams;
 
 namespace JPEG_Encoder.segments.sof0
 {
     public class SOF0Writer : SegmentWriter
     {
-        private const int SOFOMARKER = 0xFFC0;
+        private const ushort SOFOMARKER = 0xC0FF;
 
-        private int length;
-        private int sampleRate = 8;
+        private byte length;
+        private byte sampleRate = 8;
         private int yImgSize;
         private int xImgSize;
         private int subsampling;
         private int numberOfComponents;
         private List<SOF0Component> components;
 
-        public SOF0Writer(BitStreamPP bitStream, int xImgSize, int yImgSize, int subsampling) : base(bitStream)
+        public SOF0Writer(BitStream bitStream, int xImgSize, int yImgSize, int subsampling) : base(bitStream)
         {
             this.xImgSize = xImgSize;
             this.yImgSize = yImgSize;
             this.subsampling = subsampling;
-            setComponents();
+            SetComponents();
             numberOfComponents = components.Count;
-            length = 8 + numberOfComponents * 3;
+            length = (byte) (8 + numberOfComponents * 3);
             this.xImgSize = xImgSize;
             this.yImgSize = yImgSize;
             this.subsampling = subsampling;
         }
 
-        private void setComponents()
+        private void SetComponents()
         {
             components = new List<SOF0Component>();
             components.Add(new SOF0Component(0, subsampling, subsampling, 0));
@@ -38,15 +39,19 @@ namespace JPEG_Encoder.segments.sof0
 
         public override void WriteSegment()
         {
-            _bitStream.WriteMarker(SOFOMARKER);
-            _bitStream.WriteInt32(length);
-            _bitStream.WriteInt32(sampleRate);
-            _bitStream.WriteInt32(yImgSize);
-            _bitStream.WriteInt32(xImgSize);
-            _bitStream.WriteInt32(numberOfComponents);
+            _bitStream.WriteUInt16(SOFOMARKER);
+            _bitStream.WriteByte(0x00);
+            _bitStream.WriteByte(length);
+            _bitStream.WriteByte(sampleRate);
+
+            _bitStream.WriteByte((byte) (yImgSize >> 8));
+            _bitStream.WriteByte((byte) yImgSize);
+            _bitStream.WriteByte((byte) (xImgSize >> 8));
+            _bitStream.WriteByte((byte) xImgSize);
+            _bitStream.WriteByte((byte) numberOfComponents);
             foreach (SOF0Component sof0Component in components)
             {
-                sof0Component.writeToStream(_bitStream);
+                sof0Component.WriteToStream(_bitStream);
             }
         }
     }
