@@ -1,8 +1,10 @@
 namespace JPEG_Encoder.encoding.acdc
 {
-    public class DCCategoryEncodedPair : AbstractCategoryEncodedPair
+    public class DcCategoryEncodedPair : AbstractCategoryEncodedPair
     {
-        public DCCategoryEncodedPair(int pair, int entryCategoryEncoded) : base(pair, entryCategoryEncoded) {}
+        public DcCategoryEncodedPair(int pair, int entryCategoryEncoded) : base(pair, entryCategoryEncoded)
+        {
+        }
 
         public override string ToString()
         {

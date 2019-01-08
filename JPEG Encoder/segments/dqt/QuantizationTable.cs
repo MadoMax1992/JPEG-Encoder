@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using BitStreams;
 using CenterSpace.NMath.Core;
 using JPEG_Encoder.encoding;
@@ -9,7 +6,7 @@ namespace JPEG_Encoder.segments.dqt
 {
     public class QuantizationTable
     {
-        public static DoubleMatrix QuantizationMatrixLuminance = new DoubleMatrix(new double[,]
+        public static readonly DoubleMatrix QuantizationMatrixLuminance = new DoubleMatrix(new double[,]
         {
             {16, 11, 10, 16, 24, 40, 51, 61},
             {12, 12, 14, 19, 26, 58, 60, 55},
@@ -21,7 +18,7 @@ namespace JPEG_Encoder.segments.dqt
             {72, 92, 95, 98, 112, 100, 103, 99}
         });
 
-        public static DoubleMatrix QuantizationMatrixChrominance = new DoubleMatrix(new double[,]
+        public static readonly DoubleMatrix QuantizationMatrixChrominance = new DoubleMatrix(new double[,]
         {
             {17, 18, 24, 47, 99, 99, 99, 99},
             {18, 21, 26, 66, 99, 99, 99, 99},
@@ -33,26 +30,18 @@ namespace JPEG_Encoder.segments.dqt
             {99, 99, 99, 99, 99, 99, 99, 99}
         });
 
-        private byte id;
-        private int precision = 0;
-        private DoubleMatrix table;
+        private readonly byte _id;
+        private readonly DoubleMatrix _table;
 
         public QuantizationTable(byte id, DoubleMatrix table)
         {
-            this.id = id;
-            this.table = table;
+            _id = id;
+            _table = table;
         }
 
         public void WriteTable(BitStream bos)
         {
-            if (id == 0)
-            {
-                bos.WriteBit(0);
-            }
-            else
-            {
-                bos.WriteBit(1);
-            }
+            bos.WriteBit(_id == 0 ? 0 : 1);
             bos.WriteBit(0);
             bos.WriteBit(0);
             bos.WriteBit(0);
@@ -61,7 +50,6 @@ namespace JPEG_Encoder.segments.dqt
             bos.WriteBit(0);
             bos.WriteBit(0);
             bos.WriteBit(0);
-            
 
 
             ZigzagSort(bos);
@@ -69,11 +57,8 @@ namespace JPEG_Encoder.segments.dqt
 
         private void ZigzagSort(BitStream bos)
         {
-            int[] zigzaged = Util.ZigzagSort(table);
-            foreach (int tableEntry in zigzaged)
-            {
-                bos.WriteByte((byte) tableEntry);
-            }
+            int[] zigzaged = Util.ZigzagSort(_table);
+            foreach (int tableEntry in zigzaged) bos.WriteByte((byte) tableEntry);
         }
     }
 }

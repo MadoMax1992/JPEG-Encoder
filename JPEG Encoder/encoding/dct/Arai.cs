@@ -1,17 +1,14 @@
 using System;
 using System.Diagnostics;
-using System.IO;
-using System.Runtime.CompilerServices;
 using CenterSpace.NMath.Core;
-using MathNet.Numerics.LinearAlgebra;
 
 namespace JPEG_Encoder.encoding.dct
 {
     public static class Arai
     {
-        private static readonly double[] C = 
+        private static readonly double[] C =
         {
-            1, 
+            1,
             Math.Cos(Math.PI / 16 * 1),
             Math.Cos(Math.PI / 16 * 2),
             Math.Cos(Math.PI / 16 * 3),
@@ -20,7 +17,7 @@ namespace JPEG_Encoder.encoding.dct
             Math.Cos(Math.PI / 16 * 6),
             Math.Cos(Math.PI / 16 * 7)
         };
-        
+
         private static readonly double[] A =
         {
             1,
@@ -30,7 +27,7 @@ namespace JPEG_Encoder.encoding.dct
             C[6] + C[2],
             C[6]
         };
-        
+
         private static readonly double[] S =
         {
             1d / (2 * Math.Sqrt(2)),
@@ -45,61 +42,48 @@ namespace JPEG_Encoder.encoding.dct
 
         public static void TestArai()
         {
-            double[,] array = {
-                {28,34,19,18,22,17,17,17 },
-                {31,36,20,31,166,184,177,140 },
-                {17,17,17,95,198,185,152,160 },
-                {24,20,21,42,43,41,99,150 },
-                {19,18,19,71,63,99,98,62 },
-                {81,103,90,118,26,31,23,22 },
-                {161,160,163,148,142,146,155,96 },
-                {158,139,153,148,154,155,142,35 }
+            double[,] array =
+            {
+                {28, 34, 19, 18, 22, 17, 17, 17},
+                {31, 36, 20, 31, 166, 184, 177, 140},
+                {17, 17, 17, 95, 198, 185, 152, 160},
+                {24, 20, 21, 42, 43, 41, 99, 150},
+                {19, 18, 19, 71, 63, 99, 98, 62},
+                {81, 103, 90, 118, 26, 31, 23, 22},
+                {161, 160, 163, 148, 142, 146, 155, 96},
+                {158, 139, 153, 148, 154, 155, 142, 35}
             };
 
-            var stopwatch = Stopwatch.StartNew();
+            Stopwatch stopwatch = Stopwatch.StartNew();
             stopwatch.Start();
 
-            DoubleMatrix X = new DoubleMatrix(array);         
-            Calc(X);
+            DoubleMatrix x = new DoubleMatrix(array);
+            Calc(x);
             Console.WriteLine("Arai DCT:");
-            Console.WriteLine(X);
+            Console.WriteLine(x);
             Console.Write("Elapsed MilliSeconds: ");
             Console.WriteLine(stopwatch.ElapsedMilliseconds);
-            
+
             Console.WriteLine("Inverse Arai:");
-            CalcReverse(X);
-            Console.WriteLine(X);
+            CalcReverse(x);
+            Console.WriteLine(x);
             Console.Write("Elapsed MilliSeconds: ");
             Console.WriteLine(stopwatch.ElapsedMilliseconds);
-            
+
             stopwatch.Stop();
-            
         }
-        
+
         public static void Calc(DoubleMatrix input)
         {
-            for (int i = 0; i < 8; i++)
-            {
-                AraiVector(input.Row(i));
-                
-            }
-            for (int i = 0; i < 8; i++)
-            {
-                AraiVector(input.Col(i));
-            }
+            for (int i = 0; i < 8; i++) AraiVector(input.Row(i));
+            for (int i = 0; i < 8; i++) AraiVector(input.Col(i));
         }
-        
+
         public static void CalcReverse(DoubleMatrix input)
         {
-            for (int i = 0; i < 8; i++)
-            {
-                ReverseArai(input.Row(i));
-            }
+            for (int i = 0; i < 8; i++) ReverseArai(input.Row(i));
 
-            for (int i = 0; i < 8; i++)
-            {
-                ReverseArai(input.Col(i));
-            }
+            for (int i = 0; i < 8; i++) ReverseArai(input.Col(i));
         }
 
         private static void AraiVector(DoubleVector vector)

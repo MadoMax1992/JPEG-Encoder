@@ -3,38 +3,32 @@ using BitStreams;
 
 namespace JPEG_Encoder.segments.dht
 {
-    public class DHTWriter : SegmentWriter
+    public class DhtWriter : SegmentWriter
     {
-        private const ushort DHT_MARKER = 0xC4FF;
+        private const ushort DhtMarker = 0xC4FF;
 
-        private List<HuffmanTable> tables;
+        private readonly List<HuffmanTable> _tables;
 
-        public DHTWriter(BitStream bitStream, List<HuffmanTable> tables) : base(bitStream)
+        public DhtWriter(BitStream bitStream, List<HuffmanTable> tables) : base(bitStream)
         {
-            this.tables = tables;
+            _tables = tables;
         }
 
         public int GetLength()
         {
             int sum = 0;
-            foreach (HuffmanTable table in tables)
-            {
-                sum += 17 + table.GetCodebookSize();
-            }
+            foreach (HuffmanTable table in _tables) sum += 17 + table.GetCodebookSize();
 
-            return(2 + sum);
+            return 2 + sum;
         }
 
         public override void WriteSegment()
         {
-            _bitStream.WriteUInt16(DHT_MARKER);
+            BitStream.WriteUInt16(DhtMarker);
             int length = GetLength();
-            _bitStream.WriteByte((byte) (length >> 8));
-            _bitStream.WriteByte((byte) (length & 0xff));
-            foreach (HuffmanTable table in tables)
-            {
-                table.Write(_bitStream);
-            }
+            BitStream.WriteByte((byte) (length >> 8));
+            BitStream.WriteByte((byte) (length & 0xff));
+            foreach (HuffmanTable table in _tables) table.Write(BitStream);
         }
     }
 }

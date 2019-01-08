@@ -5,16 +5,16 @@ namespace JPEG_Encoder.encoding.huffman
 {
     public class HuffmanEncoder
     {
-        private HuffmanTree huffmanTree;
+        private HuffmanTree _huffmanTree;
 
-        HuffmanEncoder()
+        private HuffmanEncoder()
         {
         }
 
         public static HuffmanEncoder Encode(int[] symbols)
         {
             HuffmanEncoder encoder = new HuffmanEncoder();
-            encoder.huffmanTree = encoder.CreateHuffmanTree(encoder.HuffmanInit(symbols));
+            encoder._huffmanTree = encoder.CreateHuffmanTree(encoder.HuffmanInit(symbols));
             return encoder;
         }
 
@@ -25,60 +25,49 @@ namespace JPEG_Encoder.encoding.huffman
 
         private HuffmanEncoder Canonical()
         {
-            huffmanTree.MakeCanonical();
+            _huffmanTree.MakeCanonical();
             return this;
         }
 
         private HuffmanEncoder WithoutFullOnes()
         {
-            huffmanTree.ReplaceMostRight();
+            _huffmanTree.ReplaceMostRight();
             return this;
         }
 
         private HuffmanEncoder WithLengthRestriction(int lengthRestriction)
         {
-            huffmanTree.RestrictToLength(lengthRestriction);
+            _huffmanTree.RestrictToLength(lengthRestriction);
             return this;
         }
 
         public Dictionary<int, CodeWord> GetCodeBookAsDictionary()
         {
-            return huffmanTree.GetCodeBookAsDictionary();
+            return _huffmanTree.GetCodeBookAsDictionary();
         }
 
-        List<HuffmanTreeComponent> HuffmanInit(int[] symbols)
+        private List<HuffmanTreeComponent> HuffmanInit(int[] symbols)
         {
             Dictionary<int, int> frequencies = new Dictionary<int, int>();
             int totalSymbols = symbols.Length;
             foreach (int symbol in symbols)
-            {
                 if (frequencies.ContainsKey(symbol))
-                {
                     frequencies[symbol]++;
-                }
                 else
-                {
                     frequencies.Add(symbol, 1);
-                }
-            }
 
             List<HuffmanTreeComponent> leafs = new List<HuffmanTreeComponent>();
             foreach (KeyValuePair<int, int> frequency in frequencies)
-            {
                 leafs.Add(new HuffmanTreeLeaf(frequency.Key, frequency.Value / (double) totalSymbols));
-            }
 
             leafs.Sort();
             return leafs;
         }
 
-        HuffmanTree CreateHuffmanTree(List<HuffmanTreeComponent> nodes)
+        private HuffmanTree CreateHuffmanTree(List<HuffmanTreeComponent> nodes)
         {
             List<HuffmanTreeLeaf> symbols = new List<HuffmanTreeLeaf>();
-            foreach (HuffmanTreeComponent node in nodes)
-            {
-                symbols.Add((HuffmanTreeLeaf) node);
-            }
+            foreach (HuffmanTreeComponent node in nodes) symbols.Add((HuffmanTreeLeaf) node);
 
             if (nodes.Count > 1)
             {
@@ -90,6 +79,7 @@ namespace JPEG_Encoder.encoding.huffman
                 nodes.RemoveAt(0);
                 nodes.Add(huffmanTreeNode);
             }
+
             return new HuffmanTree(nodes[0], symbols);
         }
 

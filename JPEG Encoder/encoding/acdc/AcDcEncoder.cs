@@ -9,90 +9,82 @@ namespace JPEG_Encoder.encoding.acdc
 {
     public class AcDcEncoder
     {
-        public static List<DCCategoryEncodedPair> GetAllDCs(ColorChannel channel)
+        public static List<DcCategoryEncodedPair> GetAllDCs(ColorChannel channel)
         {
-            List<DCCategoryEncodedPair> result = new List<DCCategoryEncodedPair>(channel.GetNumOfBlocks());
-            for (int i = 0; i < channel.GetNumOfBlocks(); i++)
-            {
-                result.Add(CalculateDifferenceDC(channel, i));
-            }
+            List<DcCategoryEncodedPair> result = new List<DcCategoryEncodedPair>(channel.GetNumOfBlocks());
+            for (int i = 0; i < channel.GetNumOfBlocks(); i++) result.Add(CalculateDifferenceDc(channel, i));
 
             return result;
         }
 
-        public static DCCategoryEncodedPair CalculateDifferenceDC(ColorChannel channel, int i)
+        public static DcCategoryEncodedPair CalculateDifferenceDc(ColorChannel channel, int i)
         {
-            int result = (int) channel.GetBlock(i)[0,0];
-            if (i != 0)
-            {
-                result = (int) channel.GetBlock(i)[0, 0] - (int) channel.GetBlock(i - 1)[0, 0];
-            }
+            int result = (int) channel.GetBlock(i)[0, 0];
+            if (i != 0) result = (int) channel.GetBlock(i)[0, 0] - (int) channel.GetBlock(i - 1)[0, 0];
 
-            return new DCCategoryEncodedPair(AbstractCategoryEncodedPair.CalculateCategory(result),
+            return new DcCategoryEncodedPair(AbstractCategoryEncodedPair.CalculateCategory(result),
                 AbstractCategoryEncodedPair.EncodeCategory(result));
         }
 
-        public static List<ACCategoryEncodedPair> GetAllACs(ColorChannel channel)
+        public static List<AcCategoryEncodedPair> GetAllACs(ColorChannel channel)
         {
-            List<ACCategoryEncodedPair> result = new List<ACCategoryEncodedPair>();
+            List<AcCategoryEncodedPair> result = new List<AcCategoryEncodedPair>();
             for (int i = 0; i < channel.GetNumOfBlocks(); i++)
             {
                 DoubleMatrix block = channel.GetBlock(i);
-                List<ACRunlengthEncodedPair> runLengthEncodedBlock = EncodeRunlength(Util.ZigzagSort(block));
-                List<ACCategoryEncodedPair> categoryEncodedBlock = EncodeCategoriesAc(runLengthEncodedBlock);
+                List<AcRunlengthEncodedPair> runLengthEncodedBlock = EncodeRunlength(Util.ZigzagSort(block));
+                List<AcCategoryEncodedPair> categoryEncodedBlock = EncodeCategoriesAc(runLengthEncodedBlock);
                 result.AddRange(categoryEncodedBlock);
             }
 
             return result;
         }
-        
-        public static List<ACRunlengthEncodedPair> EncodeRunlength(int[] zigzaged)
+
+        public static List<AcRunlengthEncodedPair> EncodeRunlength(int[] zigzaged)
         {
-            List<ACRunlengthEncodedPair> resultList = new List<ACRunlengthEncodedPair>();
+            List<AcRunlengthEncodedPair> resultList = new List<AcRunlengthEncodedPair>();
             // loop starts at index 1 because index 0 is DC
             int zeroCount = 0;
             for (int i = 1; i < zigzaged.Length; i++)
-            {
                 if (zigzaged[i] != 0 || zeroCount == 15)
                 {
-                    resultList.Add(new ACRunlengthEncodedPair(zeroCount, zigzaged[i]));
+                    resultList.Add(new AcRunlengthEncodedPair(zeroCount, zigzaged[i]));
                     zeroCount = 0;
                 }
                 else
                 {
                     zeroCount++;
                 }
-            }
+
             // EOB
-            if (zeroCount != 0 || resultList[resultList.Count - 1].GetEntry() == 0)
-            {
-                while (resultList.Count != 0 && resultList[resultList.Count - 1].GetEntry() == 0)
-                {
-                    resultList.RemoveAt(resultList.Count - 1);
-                }
-                resultList.Add(new ACRunlengthEncodedPair(0, 0));
-            }
-            return resultList;
-        }
-        
-        public static List<ACCategoryEncodedPair> EncodeCategoriesAc(List<ACRunlengthEncodedPair> acRunlengthEncodedPairs)
-        {
-            List<ACCategoryEncodedPair> resultList = new List<ACCategoryEncodedPair>();
-            foreach (ACRunlengthEncodedPair acRunlengthEncodedPair in acRunlengthEncodedPairs)
-            {
-                int category = AbstractCategoryEncodedPair.CalculateCategory(acRunlengthEncodedPair.GetEntry());
-                int pair = (acRunlengthEncodedPair.getZeroCount() << 4) +
-                           category;
-                int categoryEncoded = ACCategoryEncodedPair.EncodeCategory(acRunlengthEncodedPair.GetEntry());
-                resultList.Add(new ACCategoryEncodedPair(pair, categoryEncoded));
-            }
+            if (zeroCount == 0 && resultList[resultList.Count - 1].GetEntry() != 0) return resultList;
+            while (resultList.Count != 0 && resultList[resultList.Count - 1].GetEntry() == 0)
+                resultList.RemoveAt(resultList.Count - 1);
+            resultList.Add(new AcRunlengthEncodedPair(0, 0));
+
             return resultList;
         }
 
-        public static void writeACCoefficients(BitStream bos, List<ACCategoryEncodedPair> acEncoding,
+        private static List<AcCategoryEncodedPair> EncodeCategoriesAc(
+            List<AcRunlengthEncodedPair> acRunlengthEncodedPairs)
+        {
+            List<AcCategoryEncodedPair> resultList = new List<AcCategoryEncodedPair>();
+            foreach (AcRunlengthEncodedPair acRunlengthEncodedPair in acRunlengthEncodedPairs)
+            {
+                int category = AbstractCategoryEncodedPair.CalculateCategory(acRunlengthEncodedPair.GetEntry());
+                int pair = (acRunlengthEncodedPair.GetZeroCount() << 4) +
+                           category;
+                int categoryEncoded = AbstractCategoryEncodedPair.EncodeCategory(acRunlengthEncodedPair.GetEntry());
+                resultList.Add(new AcCategoryEncodedPair(pair, categoryEncoded));
+            }
+
+            return resultList;
+        }
+
+        public static void WriteAcCoefficients(BitStream bos, List<AcCategoryEncodedPair> acEncoding,
             Dictionary<int, CodeWord> codebook)
         {
-            foreach (ACCategoryEncodedPair ac in acEncoding)
+            foreach (AcCategoryEncodedPair ac in acEncoding)
             {
                 CodeWord codeWord = codebook[ac.GetPair()];
                 bos.WriteInt32(codeWord.GetCode());
@@ -100,8 +92,8 @@ namespace JPEG_Encoder.encoding.acdc
                 Log(codeWord, ac);
             }
         }
-        
-        public static void writeDCCoefficient(BitStream bos, DCCategoryEncodedPair dc,
+
+        public static void WriteDcCoefficient(BitStream bos, DcCategoryEncodedPair dc,
             Dictionary<int, CodeWord> codebook)
         {
             CodeWord codeWord = codebook[dc.GetPair()];
@@ -109,15 +101,14 @@ namespace JPEG_Encoder.encoding.acdc
             bos.WriteInt32(dc.GetEntryCategoryEncoded());
             Log(codeWord, dc);
         }
-        
+
         private static void Log(CodeWord codeWord, AbstractCategoryEncodedPair pair)
         {
             bool shouldLog = true;
-            if (shouldLog)
-            {
-                Console.WriteLine(Util.GetBitsAsString(codeWord.GetCode(), codeWord.GetLength()));
-                Console.WriteLine(Util.GetBitsAsString(pair.GetEntryCategoryEncoded(), pair.GetPair() & 0xf));
-            }
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            if (!shouldLog) return;
+            Console.WriteLine(Util.GetBitsAsString(codeWord.GetCode(), codeWord.GetLength()));
+            Console.WriteLine(Util.GetBitsAsString(pair.GetEntryCategoryEncoded(), pair.GetPair() & 0xf));
         }
     }
 }

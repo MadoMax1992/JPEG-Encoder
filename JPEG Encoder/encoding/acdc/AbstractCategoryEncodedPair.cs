@@ -1,38 +1,37 @@
 using System;
-using System.Reflection.Emit;
-using Microsoft.SqlServer.Server;
 
 namespace JPEG_Encoder.encoding.acdc
 {
     public abstract class AbstractCategoryEncodedPair
     {
-        private int pair;
-        private int entryCategoryEncoded;
+        private int _entryCategoryEncoded;
+        private readonly int _pair;
 
         public AbstractCategoryEncodedPair(int pair, int entryCategoryEncoded)
         {
-            this.pair = pair;
-            this.entryCategoryEncoded = entryCategoryEncoded;
+            _pair = pair;
+            _entryCategoryEncoded = entryCategoryEncoded;
         }
 
         public int GetPair()
         {
-            return pair;
+            return _pair;
         }
 
         public int GetEntryCategoryEncoded()
         {
-            return entryCategoryEncoded;
+            return _entryCategoryEncoded;
         }
 
         public void SetEntryCategoryEncoded(int entryCategoryEncoded)
         {
-            this.entryCategoryEncoded = entryCategoryEncoded;
+            _entryCategoryEncoded = entryCategoryEncoded;
         }
 
         public static int CalculateCategory(int number)
         {
-            int category = (int) (uint) Math.Round(Math.Log(Math.Abs(number)) / Math.Log(2) + 0.5, MidpointRounding.AwayFromZero);
+            int category = (int) (uint) Math.Round(Math.Log(Math.Abs(number)) / Math.Log(2) + 0.5,
+                MidpointRounding.AwayFromZero);
 
             return category;
         }
@@ -43,7 +42,6 @@ namespace JPEG_Encoder.encoding.acdc
             int category = CalculateCategory(toEncode);
             if (toEncode < 0)
             {
-
                 int maxValueCategory = (int) (Math.Pow(2, category) - 1);
                 result = Math.Abs(toEncode) ^ maxValueCategory;
             }
@@ -55,9 +53,9 @@ namespace JPEG_Encoder.encoding.acdc
             return result;
         }
 
-        public override String ToString()
+        public override string ToString()
         {
-            return pair + ", " + entryCategoryEncoded;
+            return _pair + ", " + _entryCategoryEncoded;
         }
     }
 }

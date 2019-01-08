@@ -18,7 +18,7 @@ namespace JPEG_Encoder.encoding.huffman.model
 
         public override string ToString()
         {
-            return "null"; 
+            return "null";
         }
     }
 }

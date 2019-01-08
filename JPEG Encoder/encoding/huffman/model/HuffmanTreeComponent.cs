@@ -5,6 +5,11 @@ namespace JPEG_Encoder.encoding.huffman.model
 {
     public abstract class HuffmanTreeComponent : IComparable<HuffmanTreeComponent>
     {
+        public int CompareTo(HuffmanTreeComponent other)
+        {
+            return GetFrequency().CompareTo(other.GetFrequency());
+        }
+
         public abstract double GetFrequency();
 
         public abstract void SetLeft(HuffmanTreeComponent newLeft);
@@ -20,10 +25,5 @@ namespace JPEG_Encoder.encoding.huffman.model
         public abstract void FillCodeBook(List<CodeWord> codeWords, int currentCode, int currentLength);
 
         public abstract void PrintCode(string currentCode);
-
-        public int CompareTo(HuffmanTreeComponent other)
-        {
-            return GetFrequency().CompareTo(other.GetFrequency());
-        }
     }
 }

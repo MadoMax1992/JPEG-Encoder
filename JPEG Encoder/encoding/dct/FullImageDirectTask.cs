@@ -6,11 +6,11 @@ namespace JPEG_Encoder.encoding.dct
 {
     public class FullImageDirectTask
     {
-        private ColorChannel channel;
+        private readonly ColorChannel _channel;
 
         public FullImageDirectTask(ColorChannel channel)
         {
-            this.channel = channel;
+            _channel = channel;
         }
 
         public int Call()
@@ -19,13 +19,11 @@ namespace JPEG_Encoder.encoding.dct
             Stopwatch stopwatch = Stopwatch.StartNew();
             while (stopwatch.ElapsedMilliseconds < 10000)
             {
-                foreach (DoubleMatrix block in channel.GetBlocks(0, channel.GetNumOfBlocks()))
-                {
-                    DCT.Naive(block);
-                }
+                foreach (DoubleMatrix block in _channel.GetBlocks(0, _channel.GetNumOfBlocks())) DCT.Naive(block);
 
                 count++;
             }
+
             stopwatch.Stop();
             return count;
         }

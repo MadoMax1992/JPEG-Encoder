@@ -82,7 +82,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BitStreamPP.cs" />
     <Compile Include="encoding\acdc\AbstractCategoryEncodedPair.cs" />
     <Compile Include="encoding\acdc\ACCategoryEncodedPair.cs" />
     <Compile Include="encoding\acdc\AcDcEncoder.cs" />
@@ -102,9 +101,7 @@
     <Compile Include="encoding\huffman\model\HuffmanTreeLeaf.cs" />
     <Compile Include="encoding\huffman\model\HuffmanTreeNode.cs" />
     <Compile Include="encoding\huffman\model\HuffmanTreeNullLeaf.cs" />
-    <Compile Include="encoding\huffman\model\HuffmanTreeOld.cs" />
     <Compile Include="encoding\huffman\model\HuffmanTreeComponent.cs" />
-    <Compile Include="encoding\huffman\Node.cs" />
     <Compile Include="encoding\Util.cs" />
     <Compile Include="ImageOld.cs" />
     <Compile Include="image\colors\ColorChannel.cs" />

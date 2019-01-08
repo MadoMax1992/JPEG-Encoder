@@ -5,8 +5,8 @@ namespace JPEG_Encoder.encoding.huffman.model
 {
     public class HuffmanTreeLeaf : HuffmanTreeComponent
     {
-        private readonly int _symbol;
         private readonly double _frequency;
+        private readonly int _symbol;
 
         public HuffmanTreeLeaf(int symbol, double frequency)
         {
@@ -64,15 +64,9 @@ namespace JPEG_Encoder.encoding.huffman.model
 
         public override bool Equals(object obj)
         {
-            if (this == obj)
-            {
-                return true;
-            }
+            if (this == obj) return true;
 
-            if (obj == null || GetType().Name != obj.GetType().Name)
-            {
-                return false;
-            }
+            if (obj == null || GetType().Name != obj.GetType().Name) return false;
 
             HuffmanTreeLeaf that = (HuffmanTreeLeaf) obj;
 

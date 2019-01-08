@@ -5,9 +5,9 @@ namespace JPEG_Encoder.encoding.huffman.model
 {
     public class HuffmanTree
     {
-        private HuffmanTreeComponent _root;
         private readonly List<HuffmanTreeLeaf> _symbols;
         private bool _fullBitEliminated;
+        private HuffmanTreeComponent _root;
 
         public HuffmanTree(HuffmanTreeComponent root, List<HuffmanTreeLeaf> symbols)
         {
@@ -22,7 +22,7 @@ namespace JPEG_Encoder.encoding.huffman.model
             RecompositeTree(tree);
         }
 
-        private void LayerTreeAndSortNodesByDepth(Dictionary<int,List<HuffmanTreeComponent>> tree)
+        private void LayerTreeAndSortNodesByDepth(Dictionary<int, List<HuffmanTreeComponent>> tree)
         {
             List<HuffmanTreeComponent> nodesOfCurrentLevel = new List<HuffmanTreeComponent>();
             nodesOfCurrentLevel.Add(_root);
@@ -33,15 +33,9 @@ namespace JPEG_Encoder.encoding.huffman.model
                 foreach (HuffmanTreeComponent currentNode in nodesOfCurrentLevel)
                 {
                     tree[i].Add(currentNode);
-                    if (currentNode.GetLeft() != null)
-                    {
-                        nodesOfNextLevel.Add(currentNode.GetLeft());
-                    }
+                    if (currentNode.GetLeft() != null) nodesOfNextLevel.Add(currentNode.GetLeft());
 
-                    if (currentNode.GetRight() != null)
-                    {
-                        nodesOfNextLevel.Add(currentNode.GetRight());
-                    }
+                    if (currentNode.GetRight() != null) nodesOfNextLevel.Add(currentNode.GetRight());
                 }
 
                 nodesOfNextLevel.Sort(new DepthComparator());
@@ -52,7 +46,7 @@ namespace JPEG_Encoder.encoding.huffman.model
         private void RecompositeTree(IReadOnlyDictionary<int, List<HuffmanTreeComponent>> tree)
         {
             List<HuffmanTreeComponent> nodesOfCurrentLevel;
-            for (int i =  tree.Count - 1; i > 0; i--)
+            for (int i = tree.Count - 1; i > 0; i--)
             {
                 nodesOfCurrentLevel = tree[i];
                 List<HuffmanTreeComponent> nodesOfPreviousLevel = tree[i - 1];
@@ -61,9 +55,8 @@ namespace JPEG_Encoder.encoding.huffman.model
                 {
                     HuffmanTreeComponent lastUnusedNode =
                         nodesOfPreviousLevel[nodesOfPreviousLevel.Count - finishedNodes++ - 1];
-                    lastUnusedNode.SetLeft(nodesOfCurrentLevel[j-1]);
+                    lastUnusedNode.SetLeft(nodesOfCurrentLevel[j - 1]);
                     lastUnusedNode.SetRight(nodesOfCurrentLevel[j]);
-                    
                 }
             }
         }
@@ -78,6 +71,7 @@ namespace JPEG_Encoder.encoding.huffman.model
                 previousNode = currentNode;
                 currentNode = currentNode.GetRight();
             }
+
             previousNode.SetRight(new HuffmanTreeNode(currentNode, new HuffmanTreeNullLeaf()));
             _symbols.Add(new HuffmanTreeNullLeaf());
             _fullBitEliminated = true;
@@ -94,32 +88,29 @@ namespace JPEG_Encoder.encoding.huffman.model
             }
         }
 
-        private Dictionary<HuffmanTreeLeaf, int> Evaluate(int restriction, Dictionary<int, List<HuffmanTreeComponent>> coinDrawers)
+        private Dictionary<HuffmanTreeLeaf, int> Evaluate(int restriction,
+            Dictionary<int, List<HuffmanTreeComponent>> coinDrawers)
         {
             Dictionary<HuffmanTreeLeaf, int> codeWordLengths = new Dictionary<HuffmanTreeLeaf, int>();
             for (int denominationPower = -restriction; denominationPower < 0; denominationPower++)
             {
                 List<HuffmanTreeComponent> currentDrawer = coinDrawers[denominationPower];
                 foreach (HuffmanTreeComponent coin in currentDrawer)
-                {
                     if (coin.GetType().IsAssignableFrom(typeof(HuffmanTreeLeaf)))
                     {
                         HuffmanTreeLeaf symbol = (HuffmanTreeLeaf) coin;
                         if (codeWordLengths.ContainsKey(symbol))
-                        {
                             codeWordLengths.Add(symbol, codeWordLengths[symbol] + 1);
-                        }
                         else
-                        {
                             codeWordLengths.Add(symbol, 1);
-                        }
                     }
-                }
             }
+
             return codeWordLengths;
         }
-        
-        private HuffmanTreeComponent CreateLengthLimitedTree(Dictionary<HuffmanTreeLeaf,int> codeWordLengths, int restriction)
+
+        private HuffmanTreeComponent CreateLengthLimitedTree(Dictionary<HuffmanTreeLeaf, int> codeWordLengths,
+            int restriction)
         {
             Dictionary<int, List<HuffmanTreeComponent>> tree = new Dictionary<int, List<HuffmanTreeComponent>>();
             PrepareLevels(restriction, tree);
@@ -128,22 +119,17 @@ namespace JPEG_Encoder.encoding.huffman.model
             return tree[0][0];
         }
 
-        private void PrepareLevels(int restriction, Dictionary<int,List<HuffmanTreeComponent>> tree)
+        private void PrepareLevels(int restriction, Dictionary<int, List<HuffmanTreeComponent>> tree)
         {
-            for (int i = 0; i <= restriction; i++)
-            {
-                tree.Add(i, new List<HuffmanTreeComponent>());
-            }
+            for (int i = 0; i <= restriction; i++) tree.Add(i, new List<HuffmanTreeComponent>());
         }
-        
-        private void FillLevelsWithInitialNodes(Dictionary<HuffmanTreeLeaf, int> codeWordLengths, IReadOnlyDictionary<int, List<HuffmanTreeComponent>> tree)
+
+        private void FillLevelsWithInitialNodes(Dictionary<HuffmanTreeLeaf, int> codeWordLengths,
+            IReadOnlyDictionary<int, List<HuffmanTreeComponent>> tree)
         {
-            foreach (KeyValuePair<HuffmanTreeLeaf, int> entry in codeWordLengths)
-            {
-                tree[entry.Value].Add(entry.Key);
-            }
+            foreach (KeyValuePair<HuffmanTreeLeaf, int> entry in codeWordLengths) tree[entry.Value].Add(entry.Key);
         }
-        
+
         private void RecreateTree(int restriction, Dictionary<int, List<HuffmanTreeComponent>> tree)
         {
             for (int i = restriction; i > 0; i--)
@@ -161,38 +147,29 @@ namespace JPEG_Encoder.encoding.huffman.model
 
         private bool ValidateRestriction(int restriction)
         {
-            if (this.GetDepth() <= restriction)
-            {
-                return false;
-            }
+            if (GetDepth() <= restriction) return false;
 
-            if (Math.Ceiling(Math.Log(GetNumOfSymbols()) / Math.Log(2)) > restriction)
-            {
-                return false;
-            }
+            if (Math.Ceiling(Math.Log(GetNumOfSymbols()) / Math.Log(2)) > restriction) return false;
 
             return true;
         }
 
-        private void PackageMerge(int restriction, Dictionary<int,List<HuffmanTreeComponent>> coinDrawers)
+        private void PackageMerge(int restriction, Dictionary<int, List<HuffmanTreeComponent>> coinDrawers)
         {
             for (int denominationPower = -restriction; denominationPower < 0; denominationPower++)
             {
                 List<HuffmanTreeComponent> currentDrawer = coinDrawers[denominationPower];
                 currentDrawer.Sort();
-                if ((currentDrawer.Count % 2) != 0)
-                {
+                if (currentDrawer.Count % 2 != 0)
                     RemoveNodeAndItsChildren(coinDrawers, currentDrawer, denominationPower);
-                }
 
                 for (int i = 0; i < currentDrawer.Count; i = i + 2)
-                {
                     coinDrawers[denominationPower + 1].Add(new HuffmanTreeNode(currentDrawer[i], currentDrawer[i + 1]));
-                }
             }
         }
 
-        private void RemoveNodeAndItsChildren(Dictionary<int,List<HuffmanTreeComponent>> coinDrawers, List<HuffmanTreeComponent> currentDrawer, int currentDenominationPower)
+        private void RemoveNodeAndItsChildren(Dictionary<int, List<HuffmanTreeComponent>> coinDrawers,
+            List<HuffmanTreeComponent> currentDrawer, int currentDenominationPower)
         {
             // lösche Kinder rekursiv
             if (!currentDrawer[currentDrawer.Count - 1].GetType().IsAssignableFrom(typeof(HuffmanTreeLeaf)))
@@ -201,6 +178,7 @@ namespace JPEG_Encoder.encoding.huffman.model
                 RemoveNodeAndItsChildren(coinDrawers, previousDrawer, currentDenominationPower - 1);
                 RemoveNodeAndItsChildren(coinDrawers, previousDrawer, currentDenominationPower - 1);
             }
+
             // lösche aktueller Knoten
             currentDrawer.RemoveAt(currentDrawer.Count - 1);
         }
@@ -212,10 +190,7 @@ namespace JPEG_Encoder.encoding.huffman.model
             for (int i = -restriction; i < 0; i++)
             {
                 coinDrawer.Add(i, new List<HuffmanTreeComponent>());
-                foreach (HuffmanTreeLeaf leaf in _symbols)
-                {
-                    coinDrawer[i].Add(leaf);
-                }
+                foreach (HuffmanTreeLeaf leaf in _symbols) coinDrawer[i].Add(leaf);
             }
 
             return coinDrawer;
@@ -231,19 +206,16 @@ namespace JPEG_Encoder.encoding.huffman.model
         public Dictionary<int, CodeWord> GetCodeBookAsDictionary()
         {
             Dictionary<int, CodeWord> codeWordMap = new Dictionary<int, CodeWord>();
-            foreach (CodeWord codeWord in GetCodeBook())
-            {
-                codeWordMap.Add(codeWord.GetSymbol(), codeWord);
-            }
+            foreach (CodeWord codeWord in GetCodeBook()) codeWordMap.Add(codeWord.GetSymbol(), codeWord);
 
             return codeWordMap;
         }
-        
+
         private int GetNumOfSymbols()
         {
             return _symbols.Count;
         }
-        
+
         private int GetDepth()
         {
             return _root.GetDepth(0);

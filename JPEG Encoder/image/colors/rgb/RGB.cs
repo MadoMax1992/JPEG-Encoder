@@ -1,60 +1,58 @@
-using System;
-
 namespace JPEG_Encoder.image.colors.rgb
 {
     public class RGB
     {
-        private int rgb;
+        private int _rgb;
 
         public RGB(int red, int green, int blue)
         {
-            this.rgb = red;
-            this.rgb = (this.rgb << 8) + green;
-            this.rgb = (this.rgb << 8) + blue;
+            _rgb = red;
+            _rgb = (_rgb << 8) + green;
+            _rgb = (_rgb << 8) + blue;
         }
 
         public void SetRed(int red)
         {
-            this.rgb = (rgb & 0xFFFF) + (red << 16);
+            _rgb = (_rgb & 0xFFFF) + (red << 16);
         }
 
         public void SetGreen(int green)
         {
-            this.rgb = (rgb & 0xFF00FF) + (green << 8);
+            _rgb = (_rgb & 0xFF00FF) + (green << 8);
         }
 
         public void SetBlue(int blue)
         {
-            this.rgb = (rgb & 0xFFFF00) + blue;
+            _rgb = (_rgb & 0xFFFF00) + blue;
         }
 
-        public int GetRed()
+        private int GetRed()
         {
-            return (this.rgb >> 16) & 255;
+            return (_rgb >> 16) & 255;
         }
 
-        public int GetGreen()
+        private int GetGreen()
         {
-            return (this.rgb >> 8) & 255;
+            return (_rgb >> 8) & 255;
         }
 
-        public int GetBlue()
+        private int GetBlue()
         {
-            return this.rgb & 255;
+            return _rgb & 255;
         }
 
         public double[] GetAsArray()
         {
             double[] rgbArray = new double[3];
-            rgbArray[0] = this.GetRed();
-            rgbArray[1] = this.GetGreen();
-            rgbArray[2] = this.GetBlue();
+            rgbArray[0] = GetRed();
+            rgbArray[1] = GetGreen();
+            rgbArray[2] = GetBlue();
             return rgbArray;
         }
 
         public override string ToString()
         {
-            return GetRed() + "," + this.GetGreen() + "," + this.GetBlue();
+            return GetRed() + "," + GetGreen() + "," + GetBlue();
         }
     }
 }

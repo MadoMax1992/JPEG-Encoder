@@ -1,8 +1,10 @@
 namespace JPEG_Encoder.encoding.acdc
 {
-    public class ACCategoryEncodedPair : AbstractCategoryEncodedPair
+    public class AcCategoryEncodedPair : AbstractCategoryEncodedPair
     {
-        public ACCategoryEncodedPair(int pair, int entryCategoryEncoded) : base(pair, entryCategoryEncoded){}
+        public AcCategoryEncodedPair(int pair, int entryCategoryEncoded) : base(pair, entryCategoryEncoded)
+        {
+        }
 
         public int GetZeroCount()
         {

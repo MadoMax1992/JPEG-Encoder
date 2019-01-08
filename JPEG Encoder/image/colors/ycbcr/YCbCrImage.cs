@@ -8,8 +8,8 @@ namespace JPEG_Encoder.image.colors.ycbcr
         public YCbCrImage(ColorChannel luminance, ColorChannel cbChannel, ColorChannel crChannel, int originalWidth,
             int originalHeight) : base(luminance, cbChannel, crChannel)
         {
-            this.originalWidth = originalWidth;
-            this.originalHeight = originalHeight;
+            OriginalWidth = originalWidth;
+            OriginalHeight = originalHeight;
         }
 
         public new int GetHeight()
@@ -24,16 +24,16 @@ namespace JPEG_Encoder.image.colors.ycbcr
 
         public YCbCr GetPixelAt(int x, int y)
         {
-            return new YCbCr((int) channel1.GetPixel(x, y),
-                (int) channel2.GetPixel(x / subSampling, y / subSampling),
-                (int) channel3.GetPixel(x / subSampling, y / subSampling));
+            return new YCbCr((int) Channel1.GetPixel(x, y),
+                (int) Channel2.GetPixel(x / SubSampling, y / SubSampling),
+                (int) Channel3.GetPixel(x / SubSampling, y / SubSampling));
         }
 
         public void Reduce(int subSampling)
         {
-            channel2 = ReduceChannel(channel2, subSampling);
-            channel3 = ReduceChannel(channel3, subSampling);
-            this.subSampling = subSampling;
+            Channel2 = ReduceChannel(Channel2, subSampling);
+            Channel3 = ReduceChannel(Channel3, subSampling);
+            SubSampling = subSampling;
         }
 
         private ColorChannel ReduceChannel(ColorChannel channel, int factor)
@@ -42,20 +42,14 @@ namespace JPEG_Encoder.image.colors.ycbcr
             int reducedWidth = channel.GetWidth() / factor;
             ColorChannel result = new ColorChannel(reducedWidth, reducedHeight);
             for (int y = 0; y < reducedHeight; y++)
+            for (int x = 0; x < reducedWidth; x++)
             {
-                for (int x = 0; x < reducedWidth; x++)
-                {
-                    int sum = 0;
-                    for (int blockY = y * factor; blockY < y * factor + factor; blockY++)
-                    {
-                        for (int blockX = x * factor; blockX < x * factor + factor; blockX++)
-                        {
-                            sum += (int) channel.GetPixel(blockX, blockY);
-                        }
-                    }
+                int sum = 0;
+                for (int blockY = y * factor; blockY < y * factor + factor; blockY++)
+                for (int blockX = x * factor; blockX < x * factor + factor; blockX++)
+                    sum += (int) channel.GetPixel(blockX, blockY);
 
-                    result.SetPixel(x, y, (int) Math.Round(sum / (double) (factor * factor)));
-                }
+                result.SetPixel(x, y, (int) Math.Round(sum / (double) (factor * factor)));
             }
 
             return result;
@@ -67,10 +61,8 @@ namespace JPEG_Encoder.image.colors.ycbcr
             for (int i = 0; i < GetHeight(); i++)
             {
                 for (int j = 0; j < GetWidth(); j++)
-                {
-                    sb.Append(GetPixelAt(j, i).ToString())
+                    sb.Append(GetPixelAt(j, i))
                         .Append(",");
-                }
 
                 sb.Append("\n");
             }

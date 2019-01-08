@@ -1,6 +1,4 @@
-using System.Xml;
 using CenterSpace.NMath.Core;
-using MathNet.Numerics.LinearAlgebra;
 
 namespace JPEG_Encoder.encoding.dct
 {
@@ -17,11 +15,11 @@ namespace JPEG_Encoder.encoding.dct
         }
 
         public static void Separated(DoubleMatrix x)
-        {            
+        {
             DCT.Advanced(x);
         }
 
-        public static DoubleMatrix invert(DoubleMatrix y)
+        public static DoubleMatrix Invert(DoubleMatrix y)
         {
             return DCT.Invert(y);
         }

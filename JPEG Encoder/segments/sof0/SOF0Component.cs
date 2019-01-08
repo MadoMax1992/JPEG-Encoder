@@ -2,14 +2,14 @@ using BitStreams;
 
 namespace JPEG_Encoder.segments.sof0
 {
-    public class SOF0Component
+    public class Sof0Component
     {
         private readonly int _id;
-        private readonly int _subSamplingFactorVertical;
-        private readonly int _subSamplingFactorHorizontal;
         private readonly int _quantizationTableId;
+        private readonly int _subSamplingFactorHorizontal;
+        private readonly int _subSamplingFactorVertical;
 
-        public SOF0Component(int id, int subSamplingFactorVertical, int subSamplingFactorHorizontal,
+        public Sof0Component(int id, int subSamplingFactorVertical, int subSamplingFactorHorizontal,
             int quantizationTableId)
         {
             _id = id;
@@ -26,6 +26,6 @@ namespace JPEG_Encoder.segments.sof0
             subSamplingFactor |= _subSamplingFactorVertical << 0;
             os.WriteByte((byte) subSamplingFactor);
             os.WriteByte((byte) _quantizationTableId);
-    }
+        }
     }
 }

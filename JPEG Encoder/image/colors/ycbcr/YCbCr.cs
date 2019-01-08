@@ -1,34 +1,31 @@
-using System;
-
 namespace JPEG_Encoder.image.colors.ycbcr
 {
     public class YCbCr
     {
-        private int y;
-        private int cb;
-        private int cr;
+        private readonly int _cb;
+        private readonly int _cr;
+        private readonly int _y;
 
         public YCbCr(int luminanceChannel, int cb, int cr)
         {
-
-            y = luminanceChannel;
-            this.cb = cb;
-            this.cr = cr;
+            _y = luminanceChannel;
+            _cb = cb;
+            _cr = cr;
         }
 
         public int GetLuminanceChannel()
         {
-            return y;
+            return _y;
         }
 
         public int GetCbChannel()
         {
-            return cb;
+            return _cb;
         }
 
         public int GetCrChannel()
         {
-            return cr;
+            return _cr;
         }
 
         public override string ToString()

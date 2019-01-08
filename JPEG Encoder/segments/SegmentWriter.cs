@@ -1,15 +1,14 @@
-using System.IO;
 using BitStreams;
 
 namespace JPEG_Encoder.segments
 {
     public abstract class SegmentWriter
     {
-        protected BitStream _bitStream;
+        protected readonly BitStream BitStream;
 
         protected SegmentWriter(BitStream bitStream)
         {
-            _bitStream = bitStream;
+            BitStream = bitStream;
         }
 
         public abstract void WriteSegment();

@@ -1,29 +1,29 @@
 namespace JPEG_Encoder.encoding.acdc
 {
-    public class ACRunlengthEncodedPair
+    public class AcRunlengthEncodedPair
     {
-        private int zeroCount;
-        private int entry;
+        private readonly int _entry;
+        private readonly int _zeroCount;
 
-        public ACRunlengthEncodedPair(int zeroCount, int entry)
+        public AcRunlengthEncodedPair(int zeroCount, int entry)
         {
-            this.zeroCount = zeroCount;
-            this.entry = entry;
+            _zeroCount = zeroCount;
+            _entry = entry;
         }
-        
-        public int getZeroCount()
+
+        public int GetZeroCount()
         {
-            return zeroCount;
+            return _zeroCount;
         }
 
         public int GetEntry()
         {
-            return entry;
+            return _entry;
         }
 
         public override string ToString()
         {
-            return "(" + zeroCount + "," + entry + ")";
+            return "(" + _zeroCount + "," + _entry + ")";
         }
     }
 }

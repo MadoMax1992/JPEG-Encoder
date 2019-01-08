@@ -6,51 +6,45 @@ namespace JPEG_Encoder.segments.dht
 {
     public class HuffmanTable
     {
-        private int tableClass;
-        private List<CodeWord> codeBook;
-        private Dictionary<int, int> codeWordLengthDictionary = new Dictionary<int, int>();
-        private int id;
+        private readonly List<CodeWord> _codeBook;
+        private readonly Dictionary<int, int> _codeWordLengthDictionary = new Dictionary<int, int>();
+        private readonly int _id;
+        private readonly int _tableClass;
 
         public HuffmanTable(int id, int tableClass, List<CodeWord> codeBook)
         {
-            this.id = id;
-            this.tableClass = tableClass;
-            this.codeBook = codeBook;
+            _id = id;
+            _tableClass = tableClass;
+            _codeBook = codeBook;
             codeBook.Sort();
-            this.SetCodeWordLengthDictionary();
+            SetCodeWordLengthDictionary();
         }
 
         private void SetCodeWordLengthDictionary()
         {
-            for (int i = 1; i <= 16; i++)
-            {
-                codeWordLengthDictionary.Add(i, 0);
-            }
+            for (int i = 1; i <= 16; i++) _codeWordLengthDictionary.Add(i, 0);
 
-            foreach (CodeWord codeWord in codeBook)
+            foreach (CodeWord codeWord in _codeBook)
             {
                 int codeWordLength = codeWord.GetLength();
-                codeWordLengthDictionary[codeWordLength]++;
+                _codeWordLengthDictionary[codeWordLength]++;
             }
         }
 
         public int GetCodebookSize()
         {
-            return codeBook.Count;
+            return _codeBook.Count;
         }
 
         public void Write(BitStream bos)
         {
-            bos.WriteByte((byte) (tableClass << 4 | id << 0));
+            bos.WriteByte((byte) ((_tableClass << 4) | (_id << 0)));
 
-            for (int i = 1; i <= 16; i++)
-            {
-                bos.WriteByte((byte) codeWordLengthDictionary[i]);
-            }
+            for (int i = 1; i <= 16; i++) bos.WriteByte((byte) _codeWordLengthDictionary[i]);
 
-            for (int i = 0; i < codeBook.Count; i++)
+            for (int i = 0; i < _codeBook.Count; i++)
             {
-                CodeWord codeWord = codeBook[i];
+                CodeWord codeWord = _codeBook[i];
                 bos.WriteByte((byte) codeWord.GetSymbol());
             }
         }

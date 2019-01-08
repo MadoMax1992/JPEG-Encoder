@@ -1,58 +1,56 @@
 using System.Collections.Generic;
-using System.Linq;
 using BitStreams;
 
 namespace JPEG_Encoder.segments.sof0
 {
-    public class SOF0Writer : SegmentWriter
+    public class Sof0Writer : SegmentWriter
     {
-        private const ushort SOFOMARKER = 0xC0FF;
+        private const ushort Sof0Marker = 0xC0FF;
+        private List<Sof0Component> _components;
 
-        private byte length;
-        private byte sampleRate = 8;
-        private int yImgSize;
-        private int xImgSize;
-        private int subsampling;
-        private int numberOfComponents;
-        private List<SOF0Component> components;
+        private readonly byte _length;
+        private readonly int _numberOfComponents;
+        private const byte SampleRate = 8;
+        private readonly int _subSampling;
+        private readonly int _xImgSize;
+        private readonly int _yImgSize;
 
-        public SOF0Writer(BitStream bitStream, int xImgSize, int yImgSize, int subsampling) : base(bitStream)
+        public Sof0Writer(BitStream bitStream, int xImgSize, int yImgSize, int subSampling) : base(bitStream)
         {
-            this.xImgSize = xImgSize;
-            this.yImgSize = yImgSize;
-            this.subsampling = subsampling;
+            _xImgSize = xImgSize;
+            _yImgSize = yImgSize;
+            _subSampling = subSampling;
             SetComponents();
-            numberOfComponents = components.Count;
-            length = (byte) (8 + numberOfComponents * 3);
-            this.xImgSize = xImgSize;
-            this.yImgSize = yImgSize;
-            this.subsampling = subsampling;
+            _numberOfComponents = _components.Count;
+            _length = (byte) (8 + _numberOfComponents * 3);
+            _xImgSize = xImgSize;
+            _yImgSize = yImgSize;
+            _subSampling = subSampling;
         }
 
         private void SetComponents()
         {
-            components = new List<SOF0Component>();
-            components.Add(new SOF0Component(0, subsampling, subsampling, 0));
-            components.Add(new SOF0Component(1, 1, 1, 1));
-            components.Add(new SOF0Component(2, 1, 1, 1));
+            _components = new List<Sof0Component>
+            {
+                new Sof0Component(0, _subSampling, _subSampling, 0),
+                new Sof0Component(1, 1, 1, 1),
+                new Sof0Component(2, 1, 1, 1)
+            };
         }
 
         public override void WriteSegment()
         {
-            _bitStream.WriteUInt16(SOFOMARKER);
-            _bitStream.WriteByte(0x00);
-            _bitStream.WriteByte(length);
-            _bitStream.WriteByte(sampleRate);
+            BitStream.WriteUInt16(Sof0Marker);
+            BitStream.WriteByte(0x00);
+            BitStream.WriteByte(_length);
+            BitStream.WriteByte(SampleRate);
 
-            _bitStream.WriteByte((byte) (yImgSize >> 8));
-            _bitStream.WriteByte((byte) yImgSize);
-            _bitStream.WriteByte((byte) (xImgSize >> 8));
-            _bitStream.WriteByte((byte) xImgSize);
-            _bitStream.WriteByte((byte) numberOfComponents);
-            foreach (SOF0Component sof0Component in components)
-            {
-                sof0Component.WriteToStream(_bitStream);
-            }
+            BitStream.WriteByte((byte) (_yImgSize >> 8));
+            BitStream.WriteByte((byte) _yImgSize);
+            BitStream.WriteByte((byte) (_xImgSize >> 8));
+            BitStream.WriteByte((byte) _xImgSize);
+            BitStream.WriteByte((byte) _numberOfComponents);
+            foreach (Sof0Component sof0Component in _components) sof0Component.WriteToStream(BitStream);
         }
     }
 }
