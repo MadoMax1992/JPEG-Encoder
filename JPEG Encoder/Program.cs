@@ -9,17 +9,17 @@ namespace JPEG_Encoder
         {
             //PerformanceCheck.StartCheck();
 
+            const string pathFilename = "../../../img/Lena32x32";
             try
             {
-                JpegEncoder.WithImageFromFile("../../../img/Lenna16x16.ppm")
+                JpegEncoder.WithImageFromFile(pathFilename + ".ppm")
                     .ConvertToJpeg(1)
-                    .WriteImageToDisk();
+                    .WriteImageToDisk(pathFilename + ".jpg");
             }
             catch (FileNotFoundException e)
             {
                 Console.WriteLine(e);
             }
-
         }
 
 

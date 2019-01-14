@@ -180,7 +180,7 @@ namespace JPEG_Encoder
             return new HuffmanTable(1, 1, new List<CodeWord>(_acCbCrCodeBook.Values));
         }
 
-        public void WriteImageToDisk()
+        public void WriteImageToDisk(string filename)
         {
             try
             {
@@ -212,7 +212,7 @@ namespace JPEG_Encoder
                 foreach (SegmentWriter segmentWriter in segmentWriters) segmentWriter.WriteSegment();
 
                 bos.GetStream().SetLength(bos.GetStream().Position);
-                bos.SaveStreamAsFile("../../../img/LennaFinal.jpg");
+                bos.SaveStreamAsFile(filename);
             }
             catch (FileNotFoundException e)
             {

@@ -88,9 +88,8 @@ namespace JPEG_Encoder.encoding.acdc
             foreach (AcCategoryEncodedPair ac in acEncoding)
             {
                 CodeWord codeWord = codebook[ac.GetPair()];
-                bos.WriteBits(codeWord.GetCodeAsBitArray());
-                if(ac.GetPair() != 0) bos.WriteBits(ac.GetEntryCategoryEncodedAsBitArray(), ac.GetCategory());
-                //else bos.WriteBit(0);
+                bos.WriteBits(codeWord.GetCodeAsBitArray(codeWord.GetLength()));
+                bos.WriteBits(ac.GetEntryCategoryEncodedAsBitArray(ac.GetCategory()), ac.GetCategory());
                 Log(codeWord, ac);
             }
         }
@@ -99,9 +98,8 @@ namespace JPEG_Encoder.encoding.acdc
             Dictionary<int, CodeWord> codebook)
         {
             CodeWord codeWord = codebook[dc.GetPair()];
-            bos.WriteBits(codeWord.GetCodeAsBitArray());
-            if (dc.GetPair() != 0) bos.WriteBits(dc.GetEntryCategoryEncodedAsBitArray());
-            //else bos.WriteBit(0);
+            bos.WriteBits(codeWord.GetCodeAsBitArray(codeWord.GetLength()));
+            bos.WriteBits(dc.GetEntryCategoryEncodedAsBitArray(dc.GetPair()), dc.GetPair());
             Log(codeWord, dc);
         }
 

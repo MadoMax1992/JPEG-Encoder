@@ -24,35 +24,47 @@ namespace JPEG_Encoder.encoding.acdc
             return _entryCategoryEncoded;
         }
 
-        public Bit[] GetEntryCategoryEncodedAsBitArray()
+        public Bit[] GetEntryCategoryEncodedAsBitArray(int length)
         {
-            string s = Convert.ToString(_entryCategoryEncoded, 2);
-            Bit[] bits = new Bit[_pair];
-
-            int i = 0;
-            if (s.Length < _pair)
+            try
             {
-                var diff = _pair - s.Length;
-                for (i = 0; i < diff; i++)
+                string s = Convert.ToString(_entryCategoryEncoded, 2);
+                if (length == 0 && s.Length != 0) length = 1;
+                Bit[] bits = new Bit[length];
+                
+                int i = 0;
+                if (s.Length < length)
                 {
-                    bits[i] = false;
+                    var diff = length - s.Length;
+                    for (i = 0; i < diff; i++)
+                    {
+                        bits[i] = false;
+                    }
                 }
+                foreach (char c in s)
+                {
+
+                    if (c == '1')
+                    {
+                        bits[i] = true;
+                    }
+                    else
+                    {
+                        bits[i] = false;
+                    }
+
+                    i++;
+                }
+
+                return bits;
             }
-            foreach (char c in s)
+            catch (IndexOutOfRangeException e)
             {
-                if (c == '1')
-                {
-                    bits[i] = true;
-                }
-                else
-                {
-                    bits[i] = false;
-                }
-
-                i++;
+                Console.WriteLine("hier");
+                Console.WriteLine();
+                throw;
             }
-
-            return bits;
+            
         }
 
         public void SetEntryCategoryEncoded(int entryCategoryEncoded)

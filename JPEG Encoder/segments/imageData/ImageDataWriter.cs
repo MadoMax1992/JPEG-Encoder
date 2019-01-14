@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using BitStreams;
 using JPEG_Encoder.encoding;
@@ -45,13 +46,17 @@ namespace JPEG_Encoder.segments.imageData
 
         public void WriteSegmentWithoutSubsampling()
         {
+            int la = image.GetChannel1().GetHeightInBlocks();
+            int test = 1;
             for (int currentY = 0; currentY < image.GetChannel1().GetHeightInBlocks(); currentY++)
             {
                 for (int currentX = 0; currentX < image.GetChannel1().GetWidthInBlocks(); currentX++)
                 {
+                    if (test == 11) Console.WriteLine("LA");
                     WriteAcDcEncodedBlock(image.GetChannel1(), currentX, currentY, dcYCodeBook, acYCodeBook);
                     WriteAcDcEncodedBlock(image.GetChannel2(), currentX, currentY, dcCbCrCodeBook, acCbCrCodeBook);
                     WriteAcDcEncodedBlock(image.GetChannel3(), currentX, currentY, dcCbCrCodeBook, acCbCrCodeBook);
+                    test++;
                 }
             }
 
@@ -92,7 +97,6 @@ namespace JPEG_Encoder.segments.imageData
                 }
             }
 
-//            BitStream.flush();
             BitStream.WriteByte(0xFF);
         }
 

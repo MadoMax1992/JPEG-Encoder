@@ -39,12 +39,20 @@ namespace JPEG_Encoder.encoding.huffman
             return _length;
         }
 
-        public Bit[] GetCodeAsBitArray()
+        public Bit[] GetCodeAsBitArray(int length)
         {
             string s = Convert.ToString(_code, 2);
-            Bit[] bits = new Bit[_length];
+            Bit[] bits = new Bit[length];
 
             int i = 0;
+            if (s.Length < length)
+            {
+                var diff = length - s.Length;
+                for (i = 0; i < diff; i++)
+                {
+                    bits[i] = false;
+                }
+            }
             foreach (char c in s)
             {
                 if (c == '1')
