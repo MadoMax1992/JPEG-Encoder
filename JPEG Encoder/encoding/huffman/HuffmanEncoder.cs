@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using JPEG_Encoder.encoding.huffman.model;
 
 namespace JPEG_Encoder.encoding.huffman
@@ -60,8 +61,8 @@ namespace JPEG_Encoder.encoding.huffman
             foreach (KeyValuePair<int, int> frequency in frequencies)
                 leafs.Add(new HuffmanTreeLeaf(frequency.Key, frequency.Value / (double) totalSymbols));
 
-            leafs.Sort();
-            return leafs;
+            List<HuffmanTreeComponent> sortedList = leafs.OrderBy(c=>c.GetFrequency()).ThenByDescending(c=>c.GetHashCode()).ToList();
+            return sortedList;
         }
 
         private HuffmanTree CreateHuffmanTree(List<HuffmanTreeComponent> nodes)

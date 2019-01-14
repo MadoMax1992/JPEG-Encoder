@@ -41,16 +41,16 @@ namespace JPEG_Encoder.segments.dqt
 
         public void WriteTable(BitStream bos)
         {
+
+            bos.WriteBit(0);
+            bos.WriteBit(0);
+            bos.WriteBit(0);
+            bos.WriteBit(0);
+            
+            bos.WriteBit(0);
+            bos.WriteBit(0);
+            bos.WriteBit(0);
             bos.WriteBit(_id == 0 ? 0 : 1);
-            bos.WriteBit(0);
-            bos.WriteBit(0);
-            bos.WriteBit(0);
-
-            bos.WriteBit(0);
-            bos.WriteBit(0);
-            bos.WriteBit(0);
-            bos.WriteBit(0);
-
 
             ZigzagSort(bos);
         }

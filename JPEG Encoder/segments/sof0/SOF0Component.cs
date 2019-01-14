@@ -22,7 +22,7 @@ namespace JPEG_Encoder.segments.sof0
         {
             os.WriteByte((byte) _id);
             int subSamplingFactor = 0;
-            subSamplingFactor |= _subSamplingFactorHorizontal << 5;
+            subSamplingFactor |= _subSamplingFactorHorizontal << 4;
             subSamplingFactor |= _subSamplingFactorVertical << 0;
             os.WriteByte((byte) subSamplingFactor);
             os.WriteByte((byte) _quantizationTableId);

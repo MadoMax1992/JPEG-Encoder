@@ -1,4 +1,5 @@
 using System;
+using BitStreams;
 
 namespace JPEG_Encoder.encoding.huffman
 {
@@ -36,6 +37,29 @@ namespace JPEG_Encoder.encoding.huffman
         public int GetLength()
         {
             return _length;
+        }
+
+        public Bit[] GetCodeAsBitArray()
+        {
+            string s = Convert.ToString(_code, 2);
+            Bit[] bits = new Bit[_length];
+
+            int i = 0;
+            foreach (char c in s)
+            {
+                if (c == '1')
+                {
+                    bits[i] = true;
+                }
+                else
+                {
+                    bits[i] = false;
+                }
+
+                i++;
+            }
+
+            return bits;
         }
 
         public override string ToString()

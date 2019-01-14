@@ -11,7 +11,7 @@ namespace JPEG_Encoder
 
             try
             {
-                JpegEncoder.WithImageFromFile("../../../img/TestPicture2.ppm")
+                JpegEncoder.WithImageFromFile("../../../img/Lenna16x16.ppm")
                     .ConvertToJpeg(1)
                     .WriteImageToDisk();
             }

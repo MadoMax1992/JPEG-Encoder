@@ -1,4 +1,5 @@
 using System;
+using BitStreams;
 using CenterSpace.NMath.Core;
 
 namespace JPEG_Encoder.encoding
@@ -48,6 +49,15 @@ namespace JPEG_Encoder.encoding
             for (int i = length - 1; i >= 0; i--) result += "" + ((bits >> i) & 0x1);
 
             return result;
+        }
+
+        public static void WriteBits(BitStream bos, int bits, int length)
+        {
+            for (int i = length - 1; i >= 0; i--)
+            {
+                var test = (bits << i) & 0x1;
+                bos.WriteBit((bits >> i) & 0x1);
+            }
         }
     }
 }

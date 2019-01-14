@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using BitStreams;
 using CenterSpace.NMath.Core;
 using JPEG_Encoder.encoding.huffman;
@@ -65,7 +66,7 @@ namespace JPEG_Encoder.encoding.acdc
             return resultList;
         }
 
-        private static List<AcCategoryEncodedPair> EncodeCategoriesAc(
+        public static List<AcCategoryEncodedPair> EncodeCategoriesAc(
             List<AcRunlengthEncodedPair> acRunlengthEncodedPairs)
         {
             List<AcCategoryEncodedPair> resultList = new List<AcCategoryEncodedPair>();
@@ -87,8 +88,9 @@ namespace JPEG_Encoder.encoding.acdc
             foreach (AcCategoryEncodedPair ac in acEncoding)
             {
                 CodeWord codeWord = codebook[ac.GetPair()];
-                bos.WriteInt32(codeWord.GetCode());
-                bos.WriteInt32(ac.GetEntryCategoryEncoded());
+                bos.WriteBits(codeWord.GetCodeAsBitArray());
+                if(ac.GetPair() != 0) bos.WriteBits(ac.GetEntryCategoryEncodedAsBitArray(), ac.GetCategory());
+                //else bos.WriteBit(0);
                 Log(codeWord, ac);
             }
         }
@@ -97,14 +99,15 @@ namespace JPEG_Encoder.encoding.acdc
             Dictionary<int, CodeWord> codebook)
         {
             CodeWord codeWord = codebook[dc.GetPair()];
-            bos.WriteInt32(codeWord.GetCode());
-            bos.WriteInt32(dc.GetEntryCategoryEncoded());
+            bos.WriteBits(codeWord.GetCodeAsBitArray());
+            if (dc.GetPair() != 0) bos.WriteBits(dc.GetEntryCategoryEncodedAsBitArray());
+            //else bos.WriteBit(0);
             Log(codeWord, dc);
         }
 
         private static void Log(CodeWord codeWord, AbstractCategoryEncodedPair pair)
         {
-            bool shouldLog = true;
+            bool shouldLog = false;
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (!shouldLog) return;
             Console.WriteLine(Util.GetBitsAsString(codeWord.GetCode(), codeWord.GetLength()));

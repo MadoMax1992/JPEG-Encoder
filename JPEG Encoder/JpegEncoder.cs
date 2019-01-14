@@ -15,8 +15,10 @@ using JPEG_Encoder.segments.app0;
 using JPEG_Encoder.segments.dht;
 using JPEG_Encoder.segments.dqt;
 using JPEG_Encoder.segments.eoi;
+using JPEG_Encoder.segments.imageData;
 using JPEG_Encoder.segments.sof0;
 using JPEG_Encoder.segments.soi;
+using JPEG_Encoder.segments.sos;
 
 namespace JPEG_Encoder
 {
@@ -183,7 +185,7 @@ namespace JPEG_Encoder
             try
             {
                 byte[] bytes = new byte[1000000];
-                BitStream bos = new BitStream(bytes);
+                BitStream bos = new BitStream(bytes, true);
                 List<SegmentWriter> segmentWriters = new List<SegmentWriter>();
                 segmentWriters.Add(new SoiWriter(bos));
                 segmentWriters.Add(new App0Writer(bos, 0x0048, 0x0048));
@@ -199,13 +201,18 @@ namespace JPEG_Encoder
                 huffmanTables.Add(GetHuffmanTableDcCbCr());
                 huffmanTables.Add(GetHuffmanTableAcCbCr());
                 segmentWriters.Add(new DhtWriter(bos, huffmanTables));
-                //segmentWriters.Add(new SOSWriter(bos));
-                //segmentWriters.Add(new ImageDataWriter());
+                segmentWriters.Add(new SosWriter(bos));
+                segmentWriters.Add(new ImageDataWriter(bos, 
+                    _image,
+                    _dcYCodeBook, 
+                    _acYCodeBook, 
+                    _dcCbCrCodeBook,
+                    _acCbCrCodeBook));
                 segmentWriters.Add(new EoiWriter(bos));
                 foreach (SegmentWriter segmentWriter in segmentWriters) segmentWriter.WriteSegment();
 
                 bos.GetStream().SetLength(bos.GetStream().Position);
-                bos.SaveStreamAsFile("../../../img/TestPicture.jpg");
+                bos.SaveStreamAsFile("../../../img/LennaFinal.jpg");
             }
             catch (FileNotFoundException e)
             {

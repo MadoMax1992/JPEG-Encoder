@@ -17,9 +17,11 @@ namespace JPEG_Encoder.segments.dqt
 
         private void SetTables()
         {
-            _tables = new List<QuantizationTable>();
-            _tables.Add(new QuantizationTable(0, QuantizationTable.QuantizationMatrixLuminance));
-            _tables.Add(new QuantizationTable(1, QuantizationTable.QuantizationMatrixChrominance));
+            _tables = new List<QuantizationTable>
+            {
+                new QuantizationTable(0, QuantizationTable.QuantizationMatrixLuminance),
+                new QuantizationTable(1, QuantizationTable.QuantizationMatrixChrominance)
+            };
         }
 
         public override void WriteSegment()

@@ -46,12 +46,12 @@
       <HintPath>..\packages\Microsoft.Solver.Foundation.3.1.0\lib\Microsoft.Solver.Foundation.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NMath, Version=6.2.0.44, Culture=neutral, PublicKeyToken=873235918a322639">
-      <HintPath>..\packages\CenterSpace.NMath.6.2.0.44\lib\net40\NMath.dll</HintPath>
+    <Reference Include="NMath, Version=6.2.0.50, Culture=neutral, PublicKeyToken=873235918a322639">
+      <HintPath>..\packages\CenterSpace.NMath.6.2.0.50\lib\net40\NMath.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="NMathStats, Version=4.2.0.44, Culture=neutral, PublicKeyToken=873235918a322639">
-      <HintPath>..\packages\CenterSpace.NMath.Stats.4.2.0.44\lib\net40\NMathStats.dll</HintPath>
+    <Reference Include="NMathStats, Version=4.2.0.50, Culture=neutral, PublicKeyToken=873235918a322639">
+      <HintPath>..\packages\CenterSpace.NMath.Stats.4.2.0.50\lib\net40\NMathStats.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -120,10 +120,13 @@
     <Compile Include="segments\dqt\DQTWriter.cs" />
     <Compile Include="segments\dqt\QuantizationTable.cs" />
     <Compile Include="segments\eoi\EOIWriter.cs" />
+    <Compile Include="segments\imageData\ImageDataWriter.cs" />
     <Compile Include="segments\SegmentWriter.cs" />
     <Compile Include="segments\sof0\SOF0Component.cs" />
     <Compile Include="segments\sof0\SOF0Writer.cs" />
     <Compile Include="segments\soi\SOIWriter.cs" />
+    <Compile Include="segments\sos\SOSComponent.cs" />
+    <Compile Include="segments\sos\SOSWriter.cs" />
     <Compile Include="utility.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -141,8 +144,8 @@
     <Error Condition="!Exists('..\packages\xunit.core.2.4.1\build\xunit.core.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\xunit.core.2.4.1\build\xunit.core.props'))" />
     <Error Condition="!Exists('..\packages\xunit.core.2.4.1\build\xunit.core.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\xunit.core.2.4.1\build\xunit.core.targets'))" />
     <Error Condition="!Exists('..\packages\xunit.runner.console.2.4.1\build\xunit.runner.console.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\xunit.runner.console.2.4.1\build\xunit.runner.console.props'))" />
-    <Error Condition="!Exists('..\packages\CenterSpace.NMath.6.2.0.44\build\CenterSpace.NMath.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CenterSpace.NMath.6.2.0.44\build\CenterSpace.NMath.targets'))" />
+    <Error Condition="!Exists('..\packages\CenterSpace.NMath.6.2.0.50\build\CenterSpace.NMath.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\CenterSpace.NMath.6.2.0.50\build\CenterSpace.NMath.targets'))" />
   </Target>
   <Import Project="..\packages\xunit.core.2.4.1\build\xunit.core.targets" Condition="Exists('..\packages\xunit.core.2.4.1\build\xunit.core.targets')" />
-  <Import Project="..\packages\CenterSpace.NMath.6.2.0.44\build\CenterSpace.NMath.targets" Condition="Exists('..\packages\CenterSpace.NMath.6.2.0.44\build\CenterSpace.NMath.targets')" />
+  <Import Project="..\packages\CenterSpace.NMath.6.2.0.50\build\CenterSpace.NMath.targets" Condition="Exists('..\packages\CenterSpace.NMath.6.2.0.50\build\CenterSpace.NMath.targets')" />
 </Project>

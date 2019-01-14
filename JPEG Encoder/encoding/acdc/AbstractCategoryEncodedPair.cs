@@ -1,4 +1,5 @@
 using System;
+using BitStreams;
 
 namespace JPEG_Encoder.encoding.acdc
 {
@@ -21,6 +22,37 @@ namespace JPEG_Encoder.encoding.acdc
         public int GetEntryCategoryEncoded()
         {
             return _entryCategoryEncoded;
+        }
+
+        public Bit[] GetEntryCategoryEncodedAsBitArray()
+        {
+            string s = Convert.ToString(_entryCategoryEncoded, 2);
+            Bit[] bits = new Bit[_pair];
+
+            int i = 0;
+            if (s.Length < _pair)
+            {
+                var diff = _pair - s.Length;
+                for (i = 0; i < diff; i++)
+                {
+                    bits[i] = false;
+                }
+            }
+            foreach (char c in s)
+            {
+                if (c == '1')
+                {
+                    bits[i] = true;
+                }
+                else
+                {
+                    bits[i] = false;
+                }
+
+                i++;
+            }
+
+            return bits;
         }
 
         public void SetEntryCategoryEncoded(int entryCategoryEncoded)
