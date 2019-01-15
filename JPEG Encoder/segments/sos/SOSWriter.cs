@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using BitStreams;
-using JPEG_Encoder.segments.soi;
 
 namespace JPEG_Encoder.segments.sos
 {

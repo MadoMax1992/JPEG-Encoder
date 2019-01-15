@@ -9,9 +9,10 @@ namespace JPEG_Encoder
         {
             //PerformanceCheck.StartCheck();
 
-            const string pathFilename = "../../../img/Lena32x32";
             try
             {
+                const string pathFilename = "./images/Lena512x512";
+
                 JpegEncoder.WithImageFromFile(pathFilename + ".ppm")
                     .ConvertToJpeg(1)
                     .WriteImageToDisk(pathFilename + ".jpg");

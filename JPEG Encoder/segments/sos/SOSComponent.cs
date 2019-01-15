@@ -1,6 +1,6 @@
 using BitStreams;
 
-namespace JPEG_Encoder.segments.soi
+namespace JPEG_Encoder.segments.sos
 {
     public class SosComponent
     {

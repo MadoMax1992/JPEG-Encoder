@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using BitStreams;
 using JPEG_Encoder.encoding;
@@ -11,12 +10,12 @@ namespace JPEG_Encoder.segments.imageData
 {
     public class ImageDataWriter : SegmentWriter
     {
-        private Image image;
-        private Dictionary<int, CodeWord> dcYCodeBook;
-        private Dictionary<int, CodeWord> acYCodeBook;
-        private Dictionary<int, CodeWord> dcCbCrCodeBook;
-        private Dictionary<int, CodeWord> acCbCrCodeBook;
-        private int subSampling;
+        private readonly Image _image;
+        private readonly Dictionary<int, CodeWord> _dcYCodeBook;
+        private readonly Dictionary<int, CodeWord> _acYCodeBook;
+        private readonly Dictionary<int, CodeWord> _dcCbCrCodeBook;
+        private readonly Dictionary<int, CodeWord> _acCbCrCodeBook;
+        private readonly int _subSampling;
 
         public ImageDataWriter(BitStream os, Image image,
             Dictionary<int, CodeWord> dcYCodeBook,
@@ -24,17 +23,17 @@ namespace JPEG_Encoder.segments.imageData
             Dictionary<int, CodeWord> dcCbCrCodeBook,
             Dictionary<int, CodeWord> acCbCrCodeBook) : base(os)
         {
-            subSampling = image.GetSubSampling();
-            this.image = image;
-            this.dcYCodeBook = dcYCodeBook;
-            this.acYCodeBook = acYCodeBook;
-            this.dcCbCrCodeBook = dcCbCrCodeBook;
-            this.acCbCrCodeBook = acCbCrCodeBook;
+            _subSampling = image.GetSubSampling();
+            _image = image;
+            _dcYCodeBook = dcYCodeBook;
+            _acYCodeBook = acYCodeBook;
+            _dcCbCrCodeBook = dcCbCrCodeBook;
+            _acCbCrCodeBook = acCbCrCodeBook;
         }
 
         public override void WriteSegment()
         {
-            if (image.GetSubSampling() == 1)
+            if (_image.GetSubSampling() == 1)
             {
                 WriteSegmentWithoutSubsampling();
             }
@@ -44,59 +43,50 @@ namespace JPEG_Encoder.segments.imageData
             }
         }
 
-        public void WriteSegmentWithoutSubsampling()
+        private void WriteSegmentWithoutSubsampling()
         {
-            int la = image.GetChannel1().GetHeightInBlocks();
-            int test = 1;
-            for (int currentY = 0; currentY < image.GetChannel1().GetHeightInBlocks(); currentY++)
+            for (int currentY = 0; currentY < _image.GetChannel1().GetHeightInBlocks(); currentY++)
             {
-                for (int currentX = 0; currentX < image.GetChannel1().GetWidthInBlocks(); currentX++)
+                for (int currentX = 0; currentX < _image.GetChannel1().GetWidthInBlocks(); currentX++)
                 {
-                    if (test == 11) Console.WriteLine("LA");
-                    WriteAcDcEncodedBlock(image.GetChannel1(), currentX, currentY, dcYCodeBook, acYCodeBook);
-                    WriteAcDcEncodedBlock(image.GetChannel2(), currentX, currentY, dcCbCrCodeBook, acCbCrCodeBook);
-                    WriteAcDcEncodedBlock(image.GetChannel3(), currentX, currentY, dcCbCrCodeBook, acCbCrCodeBook);
-                    test++;
+                    WriteAcDcEncodedBlock(_image.GetChannel1(), currentX, currentY, _dcYCodeBook, _acYCodeBook);
+                    WriteAcDcEncodedBlock(_image.GetChannel2(), currentX, currentY, _dcCbCrCodeBook, _acCbCrCodeBook);
+                    WriteAcDcEncodedBlock(_image.GetChannel3(), currentX, currentY, _dcCbCrCodeBook, _acCbCrCodeBook);
                 }
             }
 
-
-                while (BitStream.BitPosition != 0)
-                {
-                    BitStream.AdvanceBit();
-                }
-            
-            //BitStream.flush();
-            BitStream.WriteByte(0xFF);
+           Util.Flush(BitStream);
+           BitStream.WriteByte(0xFF);
         }
 
-        public void WriteSegmentWithSubsampling()
+        private void WriteSegmentWithSubsampling()
         {
-            for (int currentY = 0; currentY < image.GetChannel2().GetHeightInBlocks(); currentY++)
+            for (int currentY = 0; currentY < _image.GetChannel2().GetHeightInBlocks(); currentY++)
             {
-                for (int currentX = 0; currentX < image.GetChannel2().GetWidthInBlocks(); currentX++)
+                for (int currentX = 0; currentX < _image.GetChannel2().GetWidthInBlocks(); currentX++)
                 {
-                    for (int currentYLuminance = currentY * subSampling;
-                        currentYLuminance < currentY * subSampling + subSampling;
+                    for (int currentYLuminance = currentY * _subSampling;
+                        currentYLuminance < currentY * _subSampling + _subSampling;
                         currentYLuminance++)
                     {
-                        for (int currentXLuminance = currentX * subSampling;
-                            currentXLuminance < currentX * subSampling + subSampling;
+                        for (int currentXLuminance = currentX * _subSampling;
+                            currentXLuminance < currentX * _subSampling + _subSampling;
                             currentXLuminance++)
                         {
-                            WriteAcDcEncodedBlock(image.GetChannel1(),
+                            WriteAcDcEncodedBlock(_image.GetChannel1(),
                                 currentXLuminance,
                                 currentYLuminance,
-                                dcYCodeBook,
-                                acYCodeBook);
+                                _dcYCodeBook,
+                                _acYCodeBook);
                         }
                     }
 
-                    WriteAcDcEncodedBlock(image.GetChannel2(), currentX, currentY, dcCbCrCodeBook, acCbCrCodeBook);
-                    WriteAcDcEncodedBlock(image.GetChannel3(), currentX, currentY, dcCbCrCodeBook, acCbCrCodeBook);
+                    WriteAcDcEncodedBlock(_image.GetChannel2(), currentX, currentY, _dcCbCrCodeBook, _acCbCrCodeBook);
+                    WriteAcDcEncodedBlock(_image.GetChannel3(), currentX, currentY, _dcCbCrCodeBook, _acCbCrCodeBook);
                 }
             }
-
+            
+            Util.Flush(BitStream);
             BitStream.WriteByte(0xFF);
         }
 
@@ -110,11 +100,11 @@ namespace JPEG_Encoder.segments.imageData
                         xOfChannel,
                         yOfChannel));
 
-            List<AcRunlengthEncodedPair> acRunlengthEncodedPairs =
+            List<AcRunlengthEncodedPair> acRunLengthEncodedPairs =
                 AcDcEncoder.EncodeRunlength(Util.ZigzagSort(channel.GetBlock(xOfChannel,
                     yOfChannel)));
             List<AcCategoryEncodedPair> acCategoryEncodedPairs = AcDcEncoder.EncodeCategoriesAc(
-                acRunlengthEncodedPairs);
+                acRunLengthEncodedPairs);
             AcDcEncoder.WriteDcCoefficient(BitStream, dc, dcCodeBook);
             AcDcEncoder.WriteAcCoefficients(BitStream, acCategoryEncodedPairs, acCodeBook);
         }

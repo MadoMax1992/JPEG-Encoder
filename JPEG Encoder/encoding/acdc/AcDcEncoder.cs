@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using BitStreams;
 using CenterSpace.NMath.Core;
 using JPEG_Encoder.encoding.huffman;
@@ -67,45 +66,45 @@ namespace JPEG_Encoder.encoding.acdc
         }
 
         public static List<AcCategoryEncodedPair> EncodeCategoriesAc(
-            List<AcRunlengthEncodedPair> acRunlengthEncodedPairs)
+            IEnumerable<AcRunlengthEncodedPair> acRunLengthEncodedPairs)
         {
             List<AcCategoryEncodedPair> resultList = new List<AcCategoryEncodedPair>();
-            foreach (AcRunlengthEncodedPair acRunlengthEncodedPair in acRunlengthEncodedPairs)
+            foreach (AcRunlengthEncodedPair acRunLengthEncodedPair in acRunLengthEncodedPairs)
             {
-                int category = AbstractCategoryEncodedPair.CalculateCategory(acRunlengthEncodedPair.GetEntry());
-                int pair = (acRunlengthEncodedPair.GetZeroCount() << 4) +
+                int category = AbstractCategoryEncodedPair.CalculateCategory(acRunLengthEncodedPair.GetEntry());
+                int pair = (acRunLengthEncodedPair.GetZeroCount() << 4) +
                            category;
-                int categoryEncoded = AbstractCategoryEncodedPair.EncodeCategory(acRunlengthEncodedPair.GetEntry());
+                int categoryEncoded = AbstractCategoryEncodedPair.EncodeCategory(acRunLengthEncodedPair.GetEntry());
                 resultList.Add(new AcCategoryEncodedPair(pair, categoryEncoded));
             }
 
             return resultList;
         }
 
-        public static void WriteAcCoefficients(BitStream bos, List<AcCategoryEncodedPair> acEncoding,
-            Dictionary<int, CodeWord> codebook)
+        public static void WriteAcCoefficients(BitStream bos, IEnumerable<AcCategoryEncodedPair> acEncoding,
+            Dictionary<int, CodeWord> codeBook)
         {
             foreach (AcCategoryEncodedPair ac in acEncoding)
             {
-                CodeWord codeWord = codebook[ac.GetPair()];
-                bos.WriteBits(codeWord.GetCodeAsBitArray(codeWord.GetLength()));
-                bos.WriteBits(ac.GetEntryCategoryEncodedAsBitArray(ac.GetCategory()), ac.GetCategory());
+                CodeWord codeWord = codeBook[ac.GetPair()];
+                Util.WriteBitsForAcDc(codeWord.GetCodeAsBitArray(codeWord.GetLength()), bos, codeWord.GetLength());
+                Util.WriteBitsForAcDc(ac.GetEntryCategoryEncodedAsBitArray(ac.GetCategory()), bos, ac.GetCategory());
                 Log(codeWord, ac);
             }
         }
 
         public static void WriteDcCoefficient(BitStream bos, DcCategoryEncodedPair dc,
-            Dictionary<int, CodeWord> codebook)
+            Dictionary<int, CodeWord> codeBook)
         {
-            CodeWord codeWord = codebook[dc.GetPair()];
-            bos.WriteBits(codeWord.GetCodeAsBitArray(codeWord.GetLength()));
-            bos.WriteBits(dc.GetEntryCategoryEncodedAsBitArray(dc.GetPair()), dc.GetPair());
+            CodeWord codeWord = codeBook[dc.GetPair()];
+            Util.WriteBitsForAcDc(codeWord.GetCodeAsBitArray(codeWord.GetLength()), bos, codeWord.GetLength());
+            Util.WriteBitsForAcDc(dc.GetEntryCategoryEncodedAsBitArray(dc.GetPair()), bos, dc.GetPair());
             Log(codeWord, dc);
         }
 
         private static void Log(CodeWord codeWord, AbstractCategoryEncodedPair pair)
         {
-            bool shouldLog = false;
+            const bool shouldLog = false;
             // ReSharper disable once ConditionIsAlwaysTrueOrFalse
             if (!shouldLog) return;
             Console.WriteLine(Util.GetBitsAsString(codeWord.GetCode(), codeWord.GetLength()));

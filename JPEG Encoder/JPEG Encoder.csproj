@@ -127,6 +127,7 @@
     <Compile Include="segments\soi\SOIWriter.cs" />
     <Compile Include="segments\sos\SOSComponent.cs" />
     <Compile Include="segments\sos\SOSWriter.cs" />
+    <Compile Include="streams\UtilBitOutputStream.cs" />
     <Compile Include="utility.cs" />
   </ItemGroup>
   <ItemGroup>

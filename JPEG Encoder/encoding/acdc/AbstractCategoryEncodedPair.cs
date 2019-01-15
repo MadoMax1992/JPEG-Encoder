@@ -60,8 +60,7 @@ namespace JPEG_Encoder.encoding.acdc
             }
             catch (IndexOutOfRangeException e)
             {
-                Console.WriteLine("hier");
-                Console.WriteLine();
+                Console.WriteLine(e);
                 throw;
             }
             
