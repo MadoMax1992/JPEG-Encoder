@@ -253,10 +253,7 @@ namespace JPEG_Encoder
                 stopwatch.Restart();
 
                 foreach (SegmentWriter segmentWriter in segmentWriters)
-                {
-                    Console.WriteLine("Writing with" + segmentWriter.GetType());
                     segmentWriter.WriteSegment();
-                }
                 
                 Console.WriteLine("Wrote Segments in "
                                   + (stopwatch.ElapsedMilliseconds / 1000d
