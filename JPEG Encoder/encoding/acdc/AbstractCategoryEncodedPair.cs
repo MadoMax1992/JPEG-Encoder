@@ -31,9 +31,11 @@ namespace JPEG_Encoder.encoding.acdc
                 int len = 0;
 
                 if (_entryCategoryEncoded != 0)
+                {
                     len = 8;
                     for (int k = 256; (_entryCategoryEncoded & k) == 0; k >>= 1)
                         len--;
+                }
 
                 if (length == 0 && len != 0) length = 1;
                 
