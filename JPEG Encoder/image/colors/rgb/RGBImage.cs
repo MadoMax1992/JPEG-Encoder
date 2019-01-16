@@ -80,6 +80,12 @@ namespace JPEG_Encoder.image.colors.rgb
                     InitPicture();
                     int x = 0;
                     int y = 0;
+                    
+                    Console.WriteLine("Finished reading PPM-Header in "
+                                      + (stopwatch.ElapsedMilliseconds / 1000d
+                                         + " seconds"));
+                    stopwatch.Restart();
+                    
                     while (binReader.PeekChar() >= 0)
                     {
                         _red.SetPixel(x, y, ReadValue(binReader));
@@ -97,7 +103,7 @@ namespace JPEG_Encoder.image.colors.rgb
                 }
 
 
-                Console.WriteLine("Finished reading PPM in "
+                Console.WriteLine("Finished reading PPM-Body in "
                                   + (stopwatch.ElapsedMilliseconds / 1000d
                                      + " seconds"));
                 stopwatch.Stop();

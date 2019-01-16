@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using BitStreams;
 using CenterSpace.NMath.Core;
@@ -56,11 +57,44 @@ namespace JPEG_Encoder
 
         public JpegEncoder ConvertToJpeg(int subsampling)
         {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            
             ((YCbCrImage) _image).Reduce(subsampling);
+            
+            Console.WriteLine("Finished Subsampling in "
+                              + (stopwatch.ElapsedMilliseconds / 1000d
+                                 + " seconds"));
+            stopwatch.Restart();
+            
             PerformDCT();
+            
+            Console.WriteLine("Finished DCT in "
+                              + (stopwatch.ElapsedMilliseconds / 1000d
+                                 + " seconds"));
+            stopwatch.Restart();
+            
             PerformQuantization();
+            
+            Console.WriteLine("Finished Quantisation in "
+                              + (stopwatch.ElapsedMilliseconds / 1000d
+                                 + " seconds"));
+            stopwatch.Restart();
+            
             PerformAcDcEncoding();
+            
+            Console.WriteLine("Finished AcDc in "
+                              + (stopwatch.ElapsedMilliseconds / 1000d
+                                 + " seconds"));
+            stopwatch.Restart();
+            
             PerformHuffmanEncoding();
+            
+            Console.WriteLine("Finished Huffman in "
+                              + (stopwatch.ElapsedMilliseconds / 1000d
+                                 + " seconds"));
+            stopwatch.Stop();
+            
             return this;
         }
 
@@ -184,6 +218,9 @@ namespace JPEG_Encoder
         {
             try
             {
+                Stopwatch stopwatch = new Stopwatch();
+                stopwatch.Start();
+                
                 byte[] bytes = new byte[1000000];
                 BitStream bos = new BitStream(bytes, true);
                 List<SegmentWriter> segmentWriters = new List<SegmentWriter>();
@@ -209,10 +246,25 @@ namespace JPEG_Encoder
                     _dcCbCrCodeBook,
                     _acCbCrCodeBook));
                 segmentWriters.Add(new EoiWriter(bos));
+                
+                Console.WriteLine("Prepared Segments in "
+                                  + (stopwatch.ElapsedMilliseconds / 1000d
+                                     + " seconds"));
+                stopwatch.Restart();
+                
                 foreach (SegmentWriter segmentWriter in segmentWriters) segmentWriter.WriteSegment();
+                
+                Console.WriteLine("Wrote Segments in "
+                                  + (stopwatch.ElapsedMilliseconds / 1000d
+                                     + " seconds"));
+                stopwatch.Restart();
 
+                Console.WriteLine("Writing to Disk...");
+                
                 bos.GetStream().SetLength(bos.GetStream().Position);
                 bos.SaveStreamAsFile(filename);
+                
+                Console.WriteLine("Write Done!");
             }
             catch (FileNotFoundException e)
             {
