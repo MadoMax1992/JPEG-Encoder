@@ -28,32 +28,30 @@ namespace JPEG_Encoder.encoding.acdc
         {
             try
             {
-                string s = Convert.ToString(_entryCategoryEncoded, 2);
-                if (length == 0 && s.Length != 0) length = 1;
-                Bit[] bits = new Bit[length];
+                int len = 0;
+
+                if (_entryCategoryEncoded != 0)
+                    len = 8;
+                    for (int k = 256; (_entryCategoryEncoded & k) == 0; k >>= 1)
+                        len--;
+
+                if (length == 0 && len != 0) length = 1;
                 
+                Bit[] bits = new Bit[length];
+
                 int i = 0;
-                if (s.Length < length)
+                if (len < length)
                 {
-                    var diff = length - s.Length;
+                    var diff = length - len;
                     for (i = 0; i < diff; i++)
                     {
                         bits[i] = false;
                     }
                 }
-                foreach (char c in s)
+
+                for(int k = len; k != 0; k--, i++)
                 {
-
-                    if (c == '1')
-                    {
-                        bits[i] = true;
-                    }
-                    else
-                    {
-                        bits[i] = false;
-                    }
-
-                    i++;
+                    bits[i] = ((_entryCategoryEncoded >> k) & 1) == 1;
                 }
 
                 return bits;
@@ -63,7 +61,6 @@ namespace JPEG_Encoder.encoding.acdc
                 Console.WriteLine(e);
                 throw;
             }
-            
         }
 
         public void SetEntryCategoryEncoded(int entryCategoryEncoded)
