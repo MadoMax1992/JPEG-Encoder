@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Security.Permissions;
 using BitStreams;
 
 namespace JPEG_Encoder.encoding.acdc
@@ -24,45 +26,11 @@ namespace JPEG_Encoder.encoding.acdc
             return _entryCategoryEncoded;
         }
 
-        public Bit[] GetEntryCategoryEncodedAsBitArray(int length)
+        public Bit[] GetEntryCategoryEncodedAsBitArray(int targetLength)
         {
-            try
-            {
-                int len = 0;
-
-                if (_entryCategoryEncoded != 0)
-                {
-                    len = 8;
-                    for (int k = 256; (_entryCategoryEncoded & k) == 0; k >>= 1)
-                        len--;
-                }
-
-                if (length == 0 && len != 0) length = 1;
-                
-                Bit[] bits = new Bit[length];
-
-                int i = 0;
-                if (len < length)
-                {
-                    var diff = length - len;
-                    for (i = 0; i < diff; i++)
-                    {
-                        bits[i] = false;
-                    }
-                }
-
-                for(int k = len; k != 0; k--, i++)
-                {
-                    bits[i] = ((_entryCategoryEncoded >> k) & 1) == 1;
-                }
-
-                return bits;
-            }
-            catch (IndexOutOfRangeException e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
+            return targetLength == 0
+                ? new Bit[1]
+                : Utility.GetYLastBitsOfX(_entryCategoryEncoded, targetLength);
         }
 
         public void SetEntryCategoryEncoded(int entryCategoryEncoded)

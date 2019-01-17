@@ -1,4 +1,4 @@
-using MathNet.Numerics.Properties;
+using BitStreams;
 
 namespace JPEG_Encoder
 {
@@ -26,6 +26,25 @@ namespace JPEG_Encoder
             }
 
             return result;
+        }
+
+        public static Bit[] GetYLastBitsOfX(int input, int targetLength)
+        {
+            int inputLength = 1;
+
+            if (input != 0)
+            {
+                inputLength = 9;
+                for (int k = 256; (input & k) == 0; k >>= 1)
+                    inputLength--;
+            }
+            
+            Bit[] bits = new Bit[targetLength];
+            
+            for (int i = targetLength - inputLength; i < targetLength; i++)
+                bits[i] = (input & (1 << (inputLength - i - 1))) != 0;
+            
+            return bits;
         }
     }
 }
