@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Security.Permissions;
 using BitStreams;
+using CenterSpace.NMath.Stats;
 
 namespace JPEG_Encoder.encoding.acdc
 {
@@ -28,9 +29,10 @@ namespace JPEG_Encoder.encoding.acdc
 
         public Bit[] GetEntryCategoryEncodedAsBitArray(int targetLength)
         {
-            return targetLength == 0
-                ? new Bit[1]
-                : Utility.GetYLastBitsOfX(_entryCategoryEncoded, targetLength);
+            if (targetLength == 0)
+                return new Bit[1];
+
+            return Utility.GetYLastBitsOfX(_entryCategoryEncoded, targetLength);
         }
 
         public void SetEntryCategoryEncoded(int entryCategoryEncoded)

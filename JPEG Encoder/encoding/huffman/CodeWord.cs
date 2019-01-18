@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using BitStreams;
 
 namespace JPEG_Encoder.encoding.huffman
@@ -39,35 +40,9 @@ namespace JPEG_Encoder.encoding.huffman
             return _length;
         }
 
-        public Bit[] GetCodeAsBitArray(int length)
+        public Bit[] GetCodeAsBitArray(int targetLength)
         {
-            string s = Convert.ToString(_code, 2);
-            Bit[] bits = new Bit[length];
-
-            int i = 0;
-            if (s.Length < length)
-            {
-                var diff = length - s.Length;
-                for (i = 0; i < diff; i++)
-                {
-                    bits[i] = false;
-                }
-            }
-            foreach (char c in s)
-            {
-                if (c == '1')
-                {
-                    bits[i] = true;
-                }
-                else
-                {
-                    bits[i] = false;
-                }
-
-                i++;
-            }
-
-            return bits;
+            return Utility.GetYLastBitsOfX(_code, targetLength);
         }
 
         public override string ToString()

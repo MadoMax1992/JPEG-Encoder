@@ -1,3 +1,4 @@
+using System;
 using BitStreams;
 
 namespace JPEG_Encoder
@@ -16,7 +17,7 @@ namespace JPEG_Encoder
         }
 
         // Custom fast Power for positive ints
-        public static int Pow(int basis, uint power)
+        public static int Pow(int basis, int power)
         {
             int result = 1;
             
@@ -34,16 +35,31 @@ namespace JPEG_Encoder
 
             if (input != 0)
             {
-                inputLength = 9;
-                for (int k = 256; (input & k) == 0; k >>= 1)
+                inputLength = targetLength;
+                for (int k = 1 << (targetLength-1); (input & k) == 0; k >>= 1)
                     inputLength--;
             }
             
             Bit[] bits = new Bit[targetLength];
             
             for (int i = targetLength - inputLength; i < targetLength; i++)
-                bits[i] = (input & (1 << (inputLength - i - 1))) != 0;
+                bits[i] = (input & (1 << (targetLength - i - 1))) != 0;
             
+            return bits;
+        }
+
+        public static Bit[] GetYLastBitsOfXUsingString(int input, int targetLength)
+        {
+            string s = Convert.ToString(input, 2);
+            Bit[] bits = new Bit[targetLength];
+
+            int i = 0;
+            
+            if (s.Length < targetLength)
+                i = targetLength - s.Length;
+
+            foreach (char c in s)
+                bits[i++] = c == '1';
             return bits;
         }
     }
