@@ -221,7 +221,7 @@ namespace JPEG_Encoder
                 Stopwatch stopwatch = new Stopwatch();
                 stopwatch.Start();
                 
-                byte[] bytes = new byte[1000000];
+                byte[] bytes = new byte[100000000];
                 BitStream bos = new BitStream(bytes, true);
                 List<SegmentWriter> segmentWriters = new List<SegmentWriter>();
                 segmentWriters.Add(new SoiWriter(bos));

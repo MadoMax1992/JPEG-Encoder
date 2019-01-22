@@ -11,7 +11,11 @@ namespace JPEG_Encoder
 
             try
             {
-                const string pathFilename = "./images/Lena512x512";
+                //const string pathFilename = "./images/Lena1024x1024";
+                //const string pathFilename = "./images/Lena512x512";
+                //const string pathFilename = "./images/Lena700x700";
+                const string pathFilename = "./images/weltall";
+
 
                 JpegEncoder.WithImageFromFile(pathFilename + ".ppm")
                     .ConvertToJpeg(1)

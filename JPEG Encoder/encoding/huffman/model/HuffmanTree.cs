@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace JPEG_Encoder.encoding.huffman.model
 {
@@ -96,11 +97,11 @@ namespace JPEG_Encoder.encoding.huffman.model
             {
                 List<HuffmanTreeComponent> currentDrawer = coinDrawers[denominationPower];
                 foreach (HuffmanTreeComponent coin in currentDrawer)
-                    if (coin.GetType().IsAssignableFrom(typeof(HuffmanTreeLeaf)))
+                    if (coin.GetType().IsAssignableFrom(typeof(HuffmanTreeLeaf)) || coin.GetType().IsAssignableFrom(typeof(HuffmanTreeNullLeaf)))
                     {
                         HuffmanTreeLeaf symbol = (HuffmanTreeLeaf) coin;
                         if (codeWordLengths.ContainsKey(symbol))
-                            codeWordLengths.Add(symbol, codeWordLengths[symbol] + 1);
+                            codeWordLengths[symbol]++;
                         else
                             codeWordLengths.Add(symbol, 1);
                     }
@@ -158,8 +159,8 @@ namespace JPEG_Encoder.encoding.huffman.model
         {
             for (int denominationPower = -restriction; denominationPower < 0; denominationPower++)
             {
+                coinDrawers[denominationPower] = coinDrawers[denominationPower].OrderBy(c=>c.GetFrequency()).ThenBy(c=>c.GetHashCode()).ToList();
                 List<HuffmanTreeComponent> currentDrawer = coinDrawers[denominationPower];
-                currentDrawer.Sort();
                 if (currentDrawer.Count % 2 != 0)
                     RemoveNodeAndItsChildren(coinDrawers, currentDrawer, denominationPower);
 
