@@ -49,6 +49,8 @@ namespace JPEG_Encoder
             MemoryStream memoryStream = new MemoryStream();
             
             fileStream.CopyTo(memoryStream);
+            
+            fileStream.Close();
 
             memoryStream.Seek(0,SeekOrigin.Begin);
             
