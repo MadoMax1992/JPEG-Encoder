@@ -45,7 +45,14 @@ namespace JPEG_Encoder
 
         public static JpegEncoder WithImageFromFile(string filename)
         {
-            RGBImage rgbImage = RGBImage.RGBImageBuilder.From(new FileStream(filename, FileMode.Open)).Build();
+            FileStream fileStream = new FileStream(filename, FileMode.Open);
+            MemoryStream memoryStream = new MemoryStream();
+            
+            fileStream.CopyTo(memoryStream);
+
+            memoryStream.Seek(0,SeekOrigin.Begin);
+            
+            RGBImage rgbImage = RGBImage.RGBImageBuilder.From(memoryStream).Build();
             YCbCrImage yCbCrImage = ColorChannels.RgbToYCbCr(rgbImage);
             return new JpegEncoder(yCbCrImage);
         }
@@ -265,7 +272,8 @@ namespace JPEG_Encoder
                 bos.GetStream().SetLength(bos.GetStream().Position);
                 bos.SaveStreamAsFile(filename);
                 
-                Console.WriteLine("Write Done!");
+                Console.WriteLine("Write Done in " + (stopwatch.ElapsedMilliseconds / 1000d
+                                                      + " seconds"));
             }
             catch (FileNotFoundException e)
             {
