@@ -5,7 +5,7 @@ namespace JPEG_Encoder
 {
     public static class Utility
     {
-        // Custom fast log2 for positive int/longs result will be +-1 todo find out weather + or - 1
+        // Custom fast log2 for positive int/longs result is int cut
         public static int Log2(ulong value)
         {
             int i;
@@ -45,21 +45,6 @@ namespace JPEG_Encoder
             for (int i = targetLength - inputLength; i < targetLength; i++)
                 bits[i] = (input & (1 << (targetLength - i - 1))) != 0;
             
-            return bits;
-        }
-
-        public static Bit[] GetYLastBitsOfXUsingString(int input, int targetLength)
-        {
-            string s = Convert.ToString(input, 2);
-            Bit[] bits = new Bit[targetLength];
-
-            int i = 0;
-            
-            if (s.Length < targetLength)
-                i = targetLength - s.Length;
-
-            foreach (char c in s)
-                bits[i++] = c == '1';
             return bits;
         }
     }
