@@ -14,7 +14,10 @@ namespace JPEG_Encoder
                 //const string pathFilename = "./images/Lena1024x1024";
                 //const string pathFilename = "./images/Lena512x512";
                 //const string pathFilename = "./images/Lena700x700";
-                const string pathFilename = "./images/weltall";
+
+                const string basepath = "../../../img/";
+                //const string basepath = "./images/";
+                const string pathFilename = basepath + "Toronto-4K";
 
 
                 JpegEncoder.WithImageFromFile(pathFilename + ".ppm")
