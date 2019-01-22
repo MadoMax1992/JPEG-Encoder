@@ -108,29 +108,29 @@ namespace JPEG_Encoder.encoding.dct
 
             double v8 = v0 + v3;
             double v9 = v1 + v2;
-            double v10 = v1 - v2;
-            double v11 = v0 - v3;
-            double v12 = -v4 - v5;
-            double v13 = (v5 + v6) * A[3];
-            double v14 = v6 + v7;
+            v2 = v1 - v2;
+            v3 = v0 - v3;
+            v4 = -v4 - v5;
+            v5 = (v5 + v6) * A[3];
+            v6 = v6 + v7;
 
-            double v17 = (v10 + v11) * A[1];
-            double v18 = (v12 + v14) * A[5];
+            v2 = (v2 + v3) * A[1];
+            double v10 = (v4 + v6) * A[5];
 
-            double v19 = -v12 * A[2] - v18;
-            double v20 = v14 * A[4] - v18;
+            v4 = -v4 * A[2] - v10;
+            v6 = v6 * A[4] - v10;
 
-            double v23 = v13 + v7;
-            double v24 = v7 - v13;
+            double v11 = v5 + v7;
+            v5 = v7 - v5;
 
             vector[0] = S[0] * (v8 + v9);
-            vector[1] = S[1] * (v23 + v20);
-            vector[2] = S[2] * (v17 + v11);
-            vector[3] = S[3] * (v24 - v19);
+            vector[1] = S[1] * (v11 + v6);
+            vector[2] = S[2] * (v2 + v3);
+            vector[3] = S[3] * (v5 - v4);
             vector[4] = S[4] * (v8 - v9);
-            vector[5] = S[5] * (v19 + v24);
-            vector[6] = S[6] * (v11 - v17);
-            vector[7] = S[7] * (v23 - v20);
+            vector[5] = S[5] * (v4 + v5);
+            vector[6] = S[6] * (v3 - v2);
+            vector[7] = S[7] * (v11 - v6);
         }
 
         public static void ReverseArai(DoubleVector vector)
