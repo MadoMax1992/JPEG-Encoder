@@ -26,17 +26,17 @@ namespace JPEG_Encoder.image.colors
 
         public void SetPixel(int x, int y, double value)
         {
-            _blocks[GetPlainIndexOfBlock(x / 8, y / 8)][y % 8, x % 8] = value;
+            _blocks[GetPlainIndexOfBlock(x >> 3, y >> 3)][y & 7, x & 7] = value;
         }
 
         public double GetPixel(int x, int y)
         {
-            return _blocks[GetPlainIndexOfBlock(x / 8, y / 8)][y % 8, x % 8];
+            return _blocks[GetPlainIndexOfBlock(x >> 3, y >> 3)][y & 7, x & 7];
         }
 
         public int GetPlainIndexOfBlock(int x, int y)
         {
-            return x + y * (_width / 8);
+            return x + y * (_width >> 3);
         }
 
         public DoubleMatrix GetBlock(int x, int y)
