@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using BitStreams;
 using CenterSpace.NMath.Core;
 using JPEG_Encoder.encoding.acdc;
@@ -109,9 +110,13 @@ namespace JPEG_Encoder
 
         private void PerformDCT()
         {
-            TransformChannel(_image.GetChannel1());
-            TransformChannel(_image.GetChannel2());
-            TransformChannel(_image.GetChannel3());
+            CountdownEvent ce1 = TransformChannel(_image.GetChannel1());
+            CountdownEvent ce2 = TransformChannel(_image.GetChannel2());
+            CountdownEvent ce3 = TransformChannel(_image.GetChannel3());
+
+            ce1.Wait();
+            ce2.Wait();
+            ce3.Wait();
         }
 
         private void PerformQuantization()
@@ -192,9 +197,47 @@ namespace JPEG_Encoder
             _acCrValues = AcDcEncoder.GetAllACs(_image.GetChannel3());
         }
 
-        private void TransformChannel(ColorChannel channel)
+        private CountdownEvent TransformChannel(ColorChannel channel)
         {
-            for (int i = 0; i < channel.GetNumOfBlocks(); i++) Arai.Calc(channel.GetBlock(i));
+            CountdownEvent e = new CountdownEvent(1);
+            int blockCount = channel.GetNumOfBlocks();
+            if (blockCount < 500 >> 4)
+            {
+                for (int i = 0; i < channel.GetNumOfBlocks(); i++)
+                    Arai.Calc(channel.GetBlock(i));                
+            }
+            else
+            {
+                int threadCount = 8;
+
+                if (blockCount < 1000 >> 4)
+                {
+                    threadCount = 4;
+                }
+
+                for (int i = 0; i < blockCount; i += blockCount / threadCount)
+                {
+                    e.AddCount();
+                    ThreadPool.QueueUserWorkItem(
+                        state =>
+                        {
+                            object[] inp = state as object[];
+
+                            //Console.WriteLine($"Thread with block {(int) inp[0]} to block {(int) inp[1]} started...");
+
+                            int upper = (int) inp[1];
+                            
+                            for (int j = (int) inp[0]; j < upper; j++)
+                                Arai.Calc(channel.GetBlock(j));
+
+                            e.Signal();
+                            
+                        }, new object[] {i, i + (blockCount / threadCount)});
+                }
+            }
+
+            e.Signal();
+            return e;
         }
 
         private void QuantizeChannel(ColorChannel channel, DoubleMatrix quantizationTable)

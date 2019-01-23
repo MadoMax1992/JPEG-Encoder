@@ -27,8 +27,9 @@ namespace JPEG_Encoder.image.colors
             ColorChannel cbChannel = new ColorChannel(rgbImage.GetWidth(), rgbImage.GetHeight());
             ColorChannel crChannel = new ColorChannel(rgbImage.GetWidth(), rgbImage.GetHeight());
 
+            int height = rgbImage.GetHeight();
 
-            if (rgbImage.GetHeight() < 256)
+            if (height < 192)
             {
                 for (int y = 0; y < rgbImage.GetHeight(); y++)
                 for (int x = 0; x < rgbImage.GetWidth(); x++)
@@ -41,8 +42,16 @@ namespace JPEG_Encoder.image.colors
             }
             else
             {
-                int height = rgbImage.GetHeight();
                 int threadCount = 16;
+
+                if (height < 500)
+                {
+                    threadCount = 4;
+                }
+                else if (height < 1000)
+                {
+                    threadCount = 8;
+                }
                 
                 CountdownEvent e = new CountdownEvent(1);
 
@@ -56,7 +65,9 @@ namespace JPEG_Encoder.image.colors
 
                             //Console.WriteLine($"Thread with row {(int) inp[0]} to row {(int) inp[1]} started...");
 
-                            for (int row = (int) inp[0]; row < (int) inp[1]; row++)
+                            int upper = (int) inp[1];
+                            
+                            for (int row = (int) inp[0]; row < upper; row++)
                             {
                                 for (int x = 0; x < rgbImage.GetWidth(); x++)
                                 {
